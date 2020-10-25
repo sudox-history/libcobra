@@ -3,5 +3,4 @@
 
 int main() {
     printf("%d\n", uv_version());
-    printf("Hello world");
 }
