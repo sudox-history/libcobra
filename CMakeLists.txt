@@ -6,5 +6,5 @@ set(CMAKE_C_STANDARD 11)
 # libuv
 add_subdirectory(deps/libuv)
 
-add_executable(main src/main.c src/transport_client.c src/transport_client.h include/cobra.h include/cobra/errors.h src/transport_errors.h)
+add_executable(main src/main.c src/transport_connection.c src/transport_connection.h include/cobra.h include/cobra/errors.h src/transport_constants.h)
 target_link_libraries(main uv_a)

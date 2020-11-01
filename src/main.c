@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <uv.h>
+#include "transport_connection.h"
 
 int main() {
-    printf("%d\n", uv_version());
+    transport_connection_t *connection = transport_connection_create();
+    transport_connection_connect(connection, "localhost", "6001");
 }
