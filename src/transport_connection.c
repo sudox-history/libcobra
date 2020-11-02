@@ -1,17 +1,29 @@
 #include <stdlib.h>
 #include <uv.h>
 
-#define COBRA_TRANSPORT_CLIENT_PRIVATE
+#define COBRA_TRANSPORT_CONNECTION_PRIVATE
 
 #include "transport_connection.h"
 #include "transport_constants.h"
 
-transport_connection_t *transport_connection_create() {
+transport_connection_t *transport_connection_create(
+        transport_client_connect_cb on_connect,
+        transport_client_close_cb on_close,
+        transport_client_error_cb on_error,
+        transport_client_packet_cb on_packet
+) {
     transport_connection_t *connection = malloc(sizeof(transport_connection_t));
+
+    // Setting callbacks
+    connection->on_connect = on_connect;
+    connection->on_close = on_close;
+    connection->on_error = on_error;
+    connection->on_packet = on_packet;
 
     // Initializing libuv loop
     uv_loop_init(&connection->loop);
     connection->loop.data = connection;
+    connection->buffer = malloc(65535);
 
     // Initializing libuv tcp handle
     uv_tcp_init(&connection->loop, &connection->tcp_handle);
@@ -30,8 +42,25 @@ void transport_connection_destroy(transport_connection_t *client) {
 void on_read(uv_stream_t *stream, ssize_t len, const uv_buf_t *buf) {
     transport_connection_t *connection = stream->data;
 
-    for (int i = 0; i < len; i++) {
-        printf("%d ", buf->base[i]);
+    while (1) {
+        if (connection->current_packet_len == 0) {
+            if (len < COBRA_TRANSPORT_PACKET_HEADER_LEN) {
+                // TODO: Закинуть байты в буффер соединения
+                break;
+            }
+
+            // TODO: Прочитать длину пакета, уменьшить len на длину заголовка.
+        }
+
+        if (connection->current_packet_len <= len) {
+            // TODO: Пакет прилетел полностью.
+            // TODO: Уменьшить len на длину пакета.
+            connection->current_packet_len = 0;
+        } else {
+            // TODO: Пакет прилетел неполностью
+            // TODO: Закинуть данные в буффер.
+            break;
+        }
     }
 }
 
@@ -42,8 +71,6 @@ void on_alloc(uv_handle_t *handle, size_t suggested_len, uv_buf_t *buf) {
 
 void on_connected(uv_connect_t *connect_req, int status) {
     transport_connection_t *connection = connect_req->data;
-
-    printf("%s\n", uv_strerror(status));
 
     if (status) {
         if (connection->on_error) {
@@ -56,8 +83,6 @@ void on_connected(uv_connect_t *connect_req, int status) {
     if (connection->on_connect) {
         connection->on_connect(connection);
     }
-
-    printf("Connected to server\n");
 
     uv_read_start((uv_stream_t *) &connection->tcp_handle, on_alloc, on_read);
 }

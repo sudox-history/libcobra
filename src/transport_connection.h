@@ -3,25 +3,36 @@
 
 typedef struct transport_connection_t transport_connection_t;
 
-#ifdef COBRA_TRANSPORT_CLIENT_PRIVATE
+typedef void (*transport_client_connect_cb)(transport_connection_t *connection);
+
+typedef void (*transport_client_close_cb)(transport_connection_t *connection);
+
+typedef void (*transport_client_error_cb)(transport_connection_t *connection, int code);
+
+typedef void (*transport_client_packet_cb)(transport_connection_t *connection, unsigned char *data, int len);
+
+#ifdef COBRA_TRANSPORT_CONNECTION_PRIVATE
 
 struct transport_connection_t {
     uv_loop_t loop;
     uv_tcp_t tcp_handle;
     uv_connect_t tcp_connect_req;
-
-    void (*on_connect)(transport_connection_t *connection);
-
-    void (*on_close)(transport_connection_t *connection);
-
-    void (*on_error)(transport_connection_t *connection, int code);
-
-    void (*on_packet)(transport_connection_t *connection, unsigned char *data, int len);
+    transport_client_connect_cb on_connect;
+    transport_client_close_cb on_close;
+    transport_client_error_cb on_error;
+    transport_client_packet_cb on_packet;
+    unsigned char *buffer;
+    int current_packet_len;
 };
 
 #endif
 
-transport_connection_t *transport_connection_create();
+transport_connection_t *transport_connection_create(
+        transport_client_connect_cb on_connect,
+        transport_client_close_cb on_close,
+        transport_client_error_cb on_error,
+        transport_client_packet_cb on_packet
+);
 
 void transport_connection_destroy(transport_connection_t *connection);
 
