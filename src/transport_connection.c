@@ -1,3 +1,5 @@
+#include "transport_buffer.h"
+#include <string.h>
 #include <stdlib.h>
 #include <uv.h>
 
@@ -13,6 +15,7 @@ transport_connection_t *transport_connection_create(
         transport_client_packet_cb on_packet
 ) {
     transport_connection_t *connection = malloc(sizeof(transport_connection_t));
+    connection->current_packet_len = 0;
 
     // Setting callbacks
     connection->on_connect = on_connect;
@@ -23,7 +26,7 @@ transport_connection_t *transport_connection_create(
     // Initializing libuv loop
     uv_loop_init(&connection->loop);
     connection->loop.data = connection;
-    connection->buffer = malloc(65535);
+    connection->buffer = transport_buffer_create(65535);
 
     // Initializing libuv tcp handle
     uv_tcp_init(&connection->loop, &connection->tcp_handle);
@@ -44,24 +47,30 @@ void on_read(uv_stream_t *stream, ssize_t len, const uv_buf_t *buf) {
 
     while (1) {
         if (connection->current_packet_len == 0) {
-            if (len < COBRA_TRANSPORT_PACKET_HEADER_LEN) {
-                // TODO: Закинуть байты в буффер соединения
+            if (transport_buffer_position(connection->buffer) < COBRA_TRANSPORT_PACKET_HEADER_LEN) {
+                transport_buffer_insert(connection->buffer, buf->base, len);
                 break;
             }
 
-            // TODO: Прочитать длину пакета, уменьшить len на длину заголовка.
+            connection->current_packet_len = transport_buffer_read_int(connection->buffer, COBRA_TRANSPORT_PACKET_HEADER_LEN);
+            len -= connection->current_packet_len;
         }
 
-        if (connection->current_packet_len <= len) {
-            // TODO: Пакет прилетел полностью.
-            // TODO: Уменьшить len на длину пакета.
+        if (connection->current_packet_len <= transport_buffer_position(connection->buffer)) {
+            unsigned char *data = malloc(connection->current_packet_len);
+            memcpy(data, &connection->buffer->data[COBRA_TRANSPORT_PACKET_HEADER_LEN], connection->current_packet_len);
+            transport_buffer_rewind(connection->buffer);
+
+            len -= connection->current_packet_len;
+            connection->on_packet(connection, data, connection->current_packet_len);
             connection->current_packet_len = 0;
         } else {
-            // TODO: Пакет прилетел неполностью
-            // TODO: Закинуть данные в буффер.
+            transport_buffer_insert(connection->buffer, buf->base, len);
             break;
         }
     }
+
+    free(buf->base);
 }
 
 void on_alloc(uv_handle_t *handle, size_t suggested_len, uv_buf_t *buf) {

@@ -21,7 +21,7 @@ struct transport_connection_t {
     transport_client_close_cb on_close;
     transport_client_error_cb on_error;
     transport_client_packet_cb on_packet;
-    unsigned char *buffer;
+    transport_buffer_t *buffer;
     int current_packet_len;
 };
 
