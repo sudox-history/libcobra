@@ -8,8 +8,9 @@ add_subdirectory(deps/libuv)
 
 # libcobra
 include_directories(include)
-add_library(cobra src/internal/buffer.c
-        )
+add_library(cobra
+        src/internal/buffer.c
+        src/internal/tcp_connection.c)
 
 
 add_executable(main src/main.c)
