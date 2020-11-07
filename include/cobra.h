@@ -1,8 +1,7 @@
 #ifndef COBRA_H
 #define COBRA_H
 
-#include "cobra/server.h"
-#include "cobra/connection.h"
-#include "cobra/errors.h"
+#include "internal/tcp_connection.h"
+#include "internal/buffer.h"
 
 #endif //COBRA_H

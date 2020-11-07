@@ -24,6 +24,8 @@ uint8_t COBRA_DISCOVERY_PACKET[5] = {8, 100, 193, 210, 19};
 #define COBRA_DISCOVERY_OK 0
 #define COBRA_DISCOVERY_ERR_BINDING 1
 #define COBRA_DISCOVERY_ERR_LISTENING 2
+
+#define COBRA_DISCOVERY_DISCOVER_TIMEOUT 5000
 #endif
 
 #ifdef COBRA_DISCOVERY_PRIVATE
@@ -33,12 +35,15 @@ struct cobra_discovery_t {
 
     /* UDP Handle */
     uv_udp_t udp_handle;
+    uv_timer_t timer_handle;
 
     /* Requests */
     uv_udp_send_t send_req;
 
-    /* Buffer */
+    /* Management */
     cobra_buffer_t *buffer;
+    bool scanning;
+    bool listening;
 
     /* Callbacks */
     found_cb on_found;
@@ -50,5 +55,8 @@ void cobra_discovery_destroy(cobra_discovery_t *discovery);
 
 int cobra_discovery_listen(cobra_discovery_t *discovery);
 int cobra_discovery_scan(cobra_discovery_t *discovery);
+
+void cobra_discovery_listen_close(cobra_discovery_t *discovery);
+void cobra_discovery_scan_close(cobra_discovery_t *discovery);
 
 #endif //COBRA_DISCOVERY_H

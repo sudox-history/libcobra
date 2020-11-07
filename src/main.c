@@ -32,12 +32,12 @@ void on_activity(cobra_tcp_connection_t *connection) {
 }
 
 void on_found(cobra_discovery_t *discovery, char *host) {
-
+    printf("FOUND NEW DEVICE: %s\n", host);
 }
 
 int main() {
     setvbuf(stdout, NULL, _IONBF, 0);
 
     cobra_discovery_t *discovery = cobra_discovery_create(on_found);
-    cobra_discovery_listen(discovery);
+    cobra_discovery_scan(discovery);
 }
