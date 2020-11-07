@@ -22,14 +22,18 @@ struct cobra_buffer_t {
 cobra_buffer_t *cobra_buffer_create(int len);
 void cobra_buffer_destroy(cobra_buffer_t *buffer);
 
+int cobra_buffer_len(cobra_buffer_t *buffer);
+void cobra_buffer_resize(cobra_buffer_t *buffer, int new_len);
+
 void cobra_buffer_write(cobra_buffer_t *buffer, uint8_t *data, int len);
-void cobra_buffer_write_pointer(cobra_buffer_t *buffer, uint8_t **data, int *cap);
+void cobra_buffer_skip(cobra_buffer_t *buffer, int len);
+int cobra_buffer_write_pointer(cobra_buffer_t *buffer, uint8_t **data);
 void cobra_buffer_write_uint16(cobra_buffer_t *buffer, uint16_t number);
 
 void cobra_buffer_read(cobra_buffer_t *buffer, uint8_t *data, int len);
 uint16_t cobra_buffer_read_uint16(cobra_buffer_t *buffer);
 
-void cobra_buffer_resize(cobra_buffer_t *buffer, int new_len);
 void cobra_buffer_clear(cobra_buffer_t *buffer);
+void cobra_buffer_fragment(cobra_buffer_t *buffer);
 
 #endif //COBRA_BUFFER_H

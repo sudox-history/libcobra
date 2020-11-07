@@ -1,40 +1,44 @@
 #include <stdio.h>
-#include "transport_connection.h"
+#include <stdlib.h>
+#include <uv.h>
 
-//void on_connect(transport_connection_t *connection) {
-//    printf("CONNECTED!");
-//}
-//
-//void on_close(transport_connection_t *connection) {
-//    printf("CLOSED!");
-//}
-//
-//void on_error(transport_connection_t *connection, int code) {
-//    printf("ERROR!");
-//}
-//
-//void on_packet(transport_connection_t *connection, unsigned char *data, int len) {
-//    printf("PACKET!");
-//}
-//
-//int main() {
-//    transport_connection_t *connection = transport_connection_create(on_connect, on_close, on_error, on_packet);
-//    transport_connection_connect(connection, "localhost", "6001");
-//}
+#include "internal/tcp_connection.h"
 
-#include <stdbool.h>
-#include "internal/buffer.h"
+void on_connect(cobra_tcp_connection_t *connection) {
+    printf("CONNECTED\n");
+}
+
+void on_closed(cobra_tcp_connection_t *connection, int status) {
+    printf("CLOSED: %d\n", status);
+}
+
+void on_data(cobra_tcp_connection_t *connection, uint8_t *data, uint16_t len) {
+    printf("NEW DATA:\n");
+
+    for (int i = 0; i < len; i++) {
+        printf("%d ", data[i]);
+    }
+
+    free(data);
+    printf("\n");
+
+    if (len == 5)
+        cobra_tcp_connection_close(connection);
+}
+
+void on_activity(cobra_tcp_connection_t *connection) {
+    printf("ACTIVITY\n");
+}
 
 int main() {
-    cobra_buffer_t *buffer = cobra_buffer_create(100);
-    cobra_buffer_write_uint16(buffer, 256);
+    setvbuf(stdout, NULL, _IONBF, 0);
 
-    cobra_buffer_resize(buffer, 200);
+    cobra_tcp_connection_t *connection = cobra_tcp_connection_create(
+            on_connect,
+            on_closed,
+            on_data,
+            on_activity
+    );
 
-    int capacity = 0;
-    uint8_t *data;
-    cobra_buffer_write_pointer(buffer, &data, &capacity);
-
-    cobra_buffer_destroy(buffer);
-    printf("test");
+    cobra_tcp_connection_connect(connection, "127.0.0.1", "64343");
 }

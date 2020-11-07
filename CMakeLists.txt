@@ -10,8 +10,12 @@ add_subdirectory(deps/libuv)
 include_directories(include)
 add_library(cobra
         src/internal/buffer.c
-        src/internal/tcp_connection.c)
+        src/internal/buffer.h
+        src/internal/tcp_connection.c
+        src/internal/tcp_connection.h)
 
+# linking libuv to libcobra
+target_link_libraries(cobra uv_a)
 
 add_executable(main src/main.c)
-target_link_libraries(main uv_a cobra)
+target_link_libraries(main cobra)
