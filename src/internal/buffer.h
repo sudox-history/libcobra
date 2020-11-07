@@ -8,7 +8,7 @@
 typedef struct cobra_buffer_t cobra_buffer_t;
 
 #ifdef COBRA_BUFFER_PRIVATE
-
+// TODO: Make this structure public and allow user to control memory by themself
 struct cobra_buffer_t {
     uint8_t *data;
     int len;
@@ -32,6 +32,8 @@ void cobra_buffer_write_uint16(cobra_buffer_t *buffer, uint16_t number);
 
 void cobra_buffer_read(cobra_buffer_t *buffer, uint8_t *data, int len);
 uint16_t cobra_buffer_read_uint16(cobra_buffer_t *buffer);
+
+bool cobra_buffer_equals(cobra_buffer_t *buffer, const uint8_t *data, int len);
 
 void cobra_buffer_clear(cobra_buffer_t *buffer);
 void cobra_buffer_fragment(cobra_buffer_t *buffer);

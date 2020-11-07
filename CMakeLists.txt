@@ -12,7 +12,9 @@ add_library(cobra
         src/internal/buffer.c
         src/internal/buffer.h
         src/internal/tcp_connection.c
-        src/internal/tcp_connection.h)
+        src/internal/tcp_connection.h
+        src/internal/discovery.c
+        src/internal/discovery.h)
 
 # linking libuv to libcobra
 target_link_libraries(cobra uv_a)

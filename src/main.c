@@ -3,6 +3,7 @@
 #include <uv.h>
 
 #include "internal/tcp_connection.h"
+#include "internal/discovery.h"
 
 void on_connect(cobra_tcp_connection_t *connection) {
     printf("CONNECTED\n");
@@ -30,15 +31,13 @@ void on_activity(cobra_tcp_connection_t *connection) {
     printf("ACTIVITY\n");
 }
 
+void on_found(cobra_discovery_t *discovery, char *host) {
+
+}
+
 int main() {
     setvbuf(stdout, NULL, _IONBF, 0);
 
-    cobra_tcp_connection_t *connection = cobra_tcp_connection_create(
-            on_connect,
-            on_closed,
-            on_data,
-            on_activity
-    );
-
-    cobra_tcp_connection_connect(connection, "127.0.0.1", "64343");
+    cobra_discovery_t *discovery = cobra_discovery_create(on_found);
+    cobra_discovery_listen(discovery);
 }

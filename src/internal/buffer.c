@@ -90,6 +90,18 @@ uint16_t cobra_buffer_read_uint16(cobra_buffer_t *buffer) {
     return result;
 }
 
+bool cobra_buffer_equals(cobra_buffer_t *buffer, const uint8_t *data, int len) {
+    if (cobra_buffer_len(buffer) != len)
+        return false;
+
+    for (int i = 0; i < len; i++) {
+        if (data[i] != buffer->data[buffer->read_pos + i])
+            return false;
+    }
+
+    return true;
+}
+
 void cobra_buffer_clear(cobra_buffer_t *buffer) {
     buffer->read_pos = buffer->write_pos = 0;
 }

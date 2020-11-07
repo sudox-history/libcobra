@@ -49,7 +49,7 @@ void on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *buf) {
     buf->len = len;
 }
 
-void on_read(uv_stream_t *stream, ssize_t read_len, const uv_buf_t *buf) {
+void on_read(uv_stream_t *stream, ssize_t read_len, const uv_buf_t *_) {
     cobra_tcp_connection_t *connection = stream->data;
 
     if (read_len <= 0) {
