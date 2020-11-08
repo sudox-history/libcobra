@@ -86,3 +86,11 @@ int cobra_tcp_server_close(cobra_tcp_server_t *server) {
     uv_close((uv_handle_t *) &server->tcp_handle, server_on_close);
     return COBRA_TCP_CONNECTION_OK;
 }
+
+void cobra_tcp_server_set_data(cobra_tcp_server_t *server, void *data) {
+    server->data = data;
+}
+
+void* cobra_tcp_server_get_data(cobra_tcp_server_t *server) {
+    return server->data;
+}

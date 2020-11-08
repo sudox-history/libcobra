@@ -36,6 +36,8 @@ struct cobra_tcp_server_t {
     /* Callbacks */
     server_connection_cb on_connection;
     server_close_cb on_close;
+
+    void *data;
 };
 #endif
 
@@ -48,5 +50,8 @@ void cobra_tcp_server_set_callbacks(cobra_tcp_server_t *server,
 
 int cobra_tcp_server_listen(cobra_tcp_server_t *server, char *host, int port);
 int cobra_tcp_server_close(cobra_tcp_server_t *server);
+
+void cobra_tcp_server_set_data(cobra_tcp_server_t *server, void *data);
+void* cobra_tcp_server_get_data(cobra_tcp_server_t *server);
 
 #endif //COBRA_TCP_SERVER_H
