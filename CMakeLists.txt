@@ -13,7 +13,9 @@ add_library(cobra
         src/internal/tcp_connection.c
         src/internal/tcp_connection.h
         src/internal/discovery.c
-        src/internal/discovery.h)
+        src/internal/discovery.h
+        src/internal/tcp_server.c
+        src/internal/tcp_server.h)
 target_include_directories(cobra
         PUBLIC include src)
 

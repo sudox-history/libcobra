@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "internal/tcp_connection.h"
+#include "internal/tcp_server.h"
 #include "internal/buffer.h"
 
 #ifdef __cplusplus

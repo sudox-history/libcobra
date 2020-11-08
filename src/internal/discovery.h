@@ -12,7 +12,7 @@
 
 typedef struct cobra_discovery_t cobra_discovery_t;
 
-typedef void (*found_cb)(cobra_discovery_t *discovery, char *host);
+typedef void (*discovery_found_cb)(cobra_discovery_t *discovery, char *host);
 
 #ifdef COBRA_DISCOVERY_PRIVATE
 uint8_t COBRA_DISCOVERY_PACKET[5] = {8, 100, 193, 210, 19};
@@ -46,13 +46,15 @@ struct cobra_discovery_t {
     bool listening;
 
     /* Callbacks */
-    found_cb on_found;
+    discovery_found_cb on_found;
     void *data;
 };
 #endif
 
-cobra_discovery_t *cobra_discovery_create(found_cb on_found);
+cobra_discovery_t *cobra_discovery_create();
 void cobra_discovery_destroy(cobra_discovery_t *discovery);
+
+void cobra_discovery_set_callbacks(cobra_discovery_t *discovery, discovery_found_cb on_found);
 
 int cobra_discovery_listen(cobra_discovery_t *discovery);
 int cobra_discovery_scan(cobra_discovery_t *discovery);
@@ -60,7 +62,7 @@ int cobra_discovery_scan(cobra_discovery_t *discovery);
 void cobra_discovery_listen_close(cobra_discovery_t *discovery);
 void cobra_discovery_scan_close(cobra_discovery_t *discovery);
 
-void cobra_discovery_set_data(cobra_discovery_t *discovery, void* data);
+void cobra_discovery_set_data(cobra_discovery_t *discovery, void *data);
 void *cobra_discovery_get_data(cobra_discovery_t *discovery);
 
 #endif //COBRA_DISCOVERY_H

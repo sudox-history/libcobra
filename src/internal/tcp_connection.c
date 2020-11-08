@@ -4,10 +4,10 @@
 #include "tcp_connection.h"
 
 cobra_tcp_connection_t *cobra_tcp_connection_create(
-        connect_cb on_connect,
-        close_cb on_close,
-        data_cb on_data,
-        activity_cb on_activity) {
+        connection_connect_cb on_connect,
+        connection_close_cb on_close,
+        connection_data_cb on_data,
+        connection_activity_cb on_activity) {
     cobra_tcp_connection_t *connection = malloc(sizeof(cobra_tcp_connection_t));
 
     uv_loop_init(&connection->loop);
@@ -23,11 +23,6 @@ cobra_tcp_connection_t *cobra_tcp_connection_create(
     connection->buffer = cobra_buffer_create(COBRA_TCP_CONNECTION_MAX_PACKET_SIZE);
     connection->packet_len = 0;
 
-    connection->on_connect = on_connect;
-    connection->on_close = on_close;
-    connection->on_data = on_data;
-    connection->on_activity = on_activity;
-
     return connection;
 }
 
@@ -37,6 +32,17 @@ void cobra_tcp_connection_destroy(cobra_tcp_connection_t *connection) {
 
     cobra_buffer_destroy(connection->buffer);
     free(connection);
+}
+
+void cobra_tcp_connection_set_callbacks(cobra_tcp_connection_t *connection,
+                                        connection_connect_cb on_connect,
+                                        connection_close_cb on_close,
+                                        connection_data_cb on_data,
+                                        connection_activity_cb on_activity) {
+    connection->on_connect = on_connect;
+    connection->on_close = on_close;
+    connection->on_data = on_data;
+    connection->on_activity = on_activity;
 }
 
 void on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *buf) {

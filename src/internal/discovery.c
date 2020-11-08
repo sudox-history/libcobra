@@ -1,7 +1,7 @@
 #define COBRA_DISCOVERY_PRIVATE
 #include "discovery.h"
 
-cobra_discovery_t *cobra_discovery_create(found_cb on_found) {
+cobra_discovery_t *cobra_discovery_create(discovery_found_cb on_found) {
     cobra_discovery_t *discovery = malloc(sizeof(cobra_discovery_t));
 
     uv_loop_init(&discovery->loop);
@@ -16,7 +16,6 @@ cobra_discovery_t *cobra_discovery_create(found_cb on_found) {
     discovery->listening = false;
     discovery->scanning = false;
 
-    discovery->on_found = on_found;
     return discovery;
 }
 
@@ -24,6 +23,10 @@ void cobra_discovery_destroy(cobra_discovery_t *discovery) {
     cobra_discovery_scan_close(discovery);
     cobra_discovery_listen_close(discovery);
     free(discovery);
+}
+
+void cobra_discovery_set_callbacks(cobra_discovery_t *discovery, discovery_found_cb on_found) {
+    discovery->on_found = on_found;
 }
 
 void discovery_on_multicast_recv(uv_udp_t *handle,
