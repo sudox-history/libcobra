@@ -175,3 +175,11 @@ void cobra_discovery_scan_close(cobra_discovery_t *discovery) {
     uv_timer_stop(&discovery->timer_handle);
     uv_udp_recv_stop(&discovery->udp_handle);
 }
+
+void cobra_discovery_set_data(cobra_discovery_t *discovery, void *data) {
+    discovery->data = data;
+}
+
+void *cobra_discovery_get_data(cobra_discovery_t *discovery) {
+    return discovery->data;
+}

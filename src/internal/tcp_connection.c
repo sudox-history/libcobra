@@ -199,3 +199,11 @@ int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data,
 
     return COBRA_TCP_CONNECTION_OK;
 }
+
+void cobra_tcp_connection_set_data(cobra_tcp_connection_t *connection, void *data) {
+    connection->data = data;
+}
+
+void *cobra_tcp_connection_get_data(cobra_tcp_connection_t *connection) {
+    return connection->data;
+}

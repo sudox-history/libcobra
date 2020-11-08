@@ -51,6 +51,7 @@ struct cobra_tcp_connection_t {
     close_cb on_close;
     data_cb on_data;
     activity_cb on_activity;
+    void *data;
 };
 #endif
 
@@ -63,6 +64,9 @@ void cobra_tcp_connection_destroy(cobra_tcp_connection_t *connection);
 
 int cobra_tcp_connection_connect(cobra_tcp_connection_t *connection, char *host, char *port);
 int cobra_tcp_connection_close(cobra_tcp_connection_t *connection);
+
+void cobra_tcp_connection_set_data(cobra_tcp_connection_t *connection, void* data);
+void *cobra_tcp_connection_get_data(cobra_tcp_connection_t *connection);
 
 int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data, uint16_t len);
 
