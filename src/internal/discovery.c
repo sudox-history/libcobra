@@ -161,7 +161,7 @@ int cobra_discovery_scan(cobra_discovery_t *discovery) {
     return COBRA_DISCOVERY_OK;
 }
 
-void cobra_discovery_listening_close(cobra_discovery_t *discovery) {
+void cobra_discovery_listen_close(cobra_discovery_t *discovery) {
     if (!discovery->listening)
         return;
 

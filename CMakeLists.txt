@@ -7,8 +7,6 @@ set(CMAKE_C_STANDARD 11)
 add_subdirectory(deps/libuv)
 
 # libcobra
-include_directories(include)
-include_directories(src)
 add_library(cobra
         src/internal/buffer.c
         src/internal/buffer.h
@@ -16,9 +14,14 @@ add_library(cobra
         src/internal/tcp_connection.h
         src/internal/discovery.c
         src/internal/discovery.h)
+target_include_directories(cobra
+        PUBLIC include
+        PRIVATE src)
 
 # linking libuv to libcobra
 target_link_libraries(cobra uv_a)
 
-add_executable(main src/main.c)
-target_link_libraries(main cobra)
+# Main (for tests)
+# Remember to commit this line before commit
+# add_executable(main src/main.c)
+# target_link_libraries(main cobra)
