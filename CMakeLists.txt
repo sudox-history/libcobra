@@ -15,8 +15,7 @@ add_library(cobra
         src/internal/discovery.c
         src/internal/discovery.h)
 target_include_directories(cobra
-        PUBLIC include
-        PRIVATE src)
+        PUBLIC include src)
 
 # linking libuv to libcobra
 target_link_libraries(cobra uv_a)
