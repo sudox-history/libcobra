@@ -36,8 +36,8 @@ void listen_test() {
 }
 
 void on_connected1(cobra_tcp_connection_t *connection) {
-    uint8_t buf[10];
-    for (int i = 0; i < 2; i++) {
+    uint8_t buf[50000];
+    for (int i = 0; i < 1000; i++) {
         printf("SENDING %d\n", i);
         cobra_tcp_connection_send(connection, buf, 10);
     }
@@ -47,6 +47,7 @@ void on_connected1(cobra_tcp_connection_t *connection) {
 
 void on_found(cobra_discovery_t *discovery, char *host) {
     printf("FOUND\n");
+    cobra_discovery_scan_close(discovery);
     cobra_tcp_connection_t *connection = cobra_tcp_connection_create();
     cobra_tcp_connection_set_callbacks(connection, on_connected1, NULL, NULL, NULL);
     cobra_tcp_connection_connect(connection, host, "5000");
@@ -55,10 +56,15 @@ void on_found(cobra_discovery_t *discovery, char *host) {
 int main() {
     setvbuf(stdout, NULL, _IONBF, 0);
 
-    //uv_thread_t thread_id;
-    //uv_thread_create(&thread_id, listen_test, 0);
+//    //uv_thread_t thread_id;
+//    //uv_thread_create(&thread_id, listen_test, 0);
+//
+//    cobra_discovery_t *discovery = cobra_discovery_create();
+//    cobra_discovery_set_callbacks(discovery, on_found);
+//    cobra_discovery_scan(discovery);
 
-    cobra_discovery_t *discovery = cobra_discovery_create();
-    cobra_discovery_set_callbacks(discovery, on_found);
-    cobra_discovery_scan(discovery);
+    printf("FOUND\n");
+    cobra_tcp_connection_t *connection = cobra_tcp_connection_create();
+    cobra_tcp_connection_set_callbacks(connection, on_connected1, NULL, NULL, NULL);
+    cobra_tcp_connection_connect(connection, "127.0.0.1", "5000");
 }
