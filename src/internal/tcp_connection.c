@@ -174,6 +174,10 @@ bool is_platform_big_endian() {
     return *(char *) &number == 0;
 }
 
+void connection_on_write(uv_write_t *req, int status) {
+    free(req);
+}
+
 int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data, uint16_t len) {
     if (!connection->connected)
         return COBRA_TCP_CONNECTION_ERR_NOT_CONNECTED;
@@ -197,14 +201,14 @@ int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data,
             .len = full_packet_len
     };
 
-    uv_write_t write_req;
+    uv_write_t *write_req = malloc(sizeof(uv_write_t));
 
-    uv_write(&write_req,
-             (uv_stream_t *) &connection->tcp_handle,
-             &write_buffer,
-             1,
-             NULL);
-
+    if (uv_write(write_req,
+                 (uv_stream_t *) &connection->tcp_handle,
+                 &write_buffer,
+                 1,
+                 connection_on_write))
+        return COBRA_TCP_CONNECTION_ERR_WRITING;
 
     return COBRA_TCP_CONNECTION_OK;
 }
