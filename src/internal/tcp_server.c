@@ -53,6 +53,8 @@ int cobra_tcp_server_listen(cobra_tcp_server_t *server, char *host, int port) {
     if (server->listening)
         return COBRA_TCP_SERVER_ERR_ALREADY_LISTENING;
 
+    server->listening = true;
+
     struct sockaddr_in addr;
     uv_ip4_addr(host, port, &addr);
 
