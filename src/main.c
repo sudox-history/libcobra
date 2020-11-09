@@ -11,17 +11,8 @@ void on_closed(cobra_tcp_connection_t *connection, int status) {
 }
 
 void on_data(cobra_tcp_connection_t *connection, uint8_t *data, uint16_t len) {
-    printf("NEW DATA:\n");
-
-    for (int i = 0; i < len; i++) {
-        printf("%d ", data[i]);
-    }
-
+    printf("NEW DATA: %d\n", len);
     free(data);
-    printf("\n");
-
-    if (len == 5)
-        cobra_tcp_connection_close(connection);
 }
 
 void on_connection(cobra_tcp_server_t *server, cobra_tcp_connection_t *connection) {
@@ -56,12 +47,12 @@ void on_found(cobra_discovery_t *discovery, char *host) {
 int main() {
     setvbuf(stdout, NULL, _IONBF, 0);
 
-//    //uv_thread_t thread_id;
-//    //uv_thread_create(&thread_id, listen_test, 0);
-//
+    //uv_thread_t thread_id;
+    //uv_thread_create(&thread_id, listen_test, 0);
+
 //    cobra_discovery_t *discovery = cobra_discovery_create();
 //    cobra_discovery_set_callbacks(discovery, on_found);
-//    cobra_discovery_scan(discovery);
+//    cobra_discovery_listen(discovery);
 
     printf("FOUND\n");
     cobra_tcp_connection_t *connection = cobra_tcp_connection_create();
