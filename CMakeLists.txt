@@ -19,10 +19,13 @@ add_library(cobra
 target_include_directories(cobra
         PUBLIC include src)
 
+
 # linking libuv to libcobra
 target_link_libraries(cobra uv_a)
 
 # Main (for tests)
 # Remember to commit this line before commit
-# add_executable(main src/main.c)
-# target_link_libraries(main cobra)
+add_executable(main src/main.c)
+target_link_options(main PUBLIC -fsanitize=address,undefined)
+
+target_link_libraries(main cobra)

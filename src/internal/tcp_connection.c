@@ -20,7 +20,7 @@ cobra_tcp_connection_t *cobra_tcp_connection_create(
     connection->write_req.data = connection;
 
     connection->connected = false;
-    connection->buffer = cobra_buffer_create(COBRA_TCP_CONNECTION_MAX_PACKET_SIZE);
+    connection->buffer = cobra_buffer_create(50002);
     connection->packet_len = 0;
 
     return connection;
@@ -80,7 +80,7 @@ void on_read(uv_stream_t *stream, ssize_t read_len, const uv_buf_t *_) {
 
             // Reading header
             connection->packet_len = cobra_buffer_read_uint16(connection->buffer);
-            if (!connection->packet_len)
+            if (connection->packet_len == 0)
                 continue;
         }
 
@@ -95,6 +95,7 @@ void on_read(uv_stream_t *stream, ssize_t read_len, const uv_buf_t *_) {
             connection->on_data(connection, packet_body, connection->packet_len);
 
         connection->packet_len = 0;
+        //cobra_buffer_fragment(connection->buffer);
     }
 
     cobra_buffer_fragment(connection->buffer);

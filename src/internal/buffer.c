@@ -109,7 +109,7 @@ void cobra_buffer_clear(cobra_buffer_t *buffer) {
 void cobra_buffer_fragment(cobra_buffer_t *buffer) {
     int len = cobra_buffer_len(buffer);
 
-    if (!len || !buffer->read_pos)
+    if (len == 0 || buffer->read_pos == 0)
         return;
 
     memcpy(buffer->data, buffer->data + buffer->read_pos, len);
