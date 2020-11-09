@@ -41,12 +41,12 @@ void server_on_connection(uv_stream_t *stream, int status) {
     uv_tcp_init(&server->loop, &connection->tcp_handle);
     uv_accept(stream, (uv_stream_t *) &connection->tcp_handle);
 
+    if (server->on_connection)
+        server->on_connection(server, connection);
+
     uv_read_start((uv_stream_t *) &connection->tcp_handle,
                   on_alloc,
                   on_read);
-
-    if (server->on_connection)
-        server->on_connection(server, connection);
 }
 
 int cobra_tcp_server_listen(cobra_tcp_server_t *server, char *host, int port) {
@@ -91,6 +91,6 @@ void cobra_tcp_server_set_data(cobra_tcp_server_t *server, void *data) {
     server->data = data;
 }
 
-void* cobra_tcp_server_get_data(cobra_tcp_server_t *server) {
+void *cobra_tcp_server_get_data(cobra_tcp_server_t *server) {
     return server->data;
 }

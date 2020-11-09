@@ -29,6 +29,7 @@ uint8_t COBRA_DISCOVERY_PACKET[5] = {8, 100, 193, 210, 19};
 #endif
 
 #ifdef COBRA_DISCOVERY_PRIVATE
+// TODO: Rewrite usage of requests
 struct cobra_discovery_t {
     /* Main loop */
     uv_loop_t loop;

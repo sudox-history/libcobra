@@ -30,6 +30,7 @@ typedef uv_buf_t uv_buf;
 #ifdef COBRA_TCP_CONNECTION_PRIVATE
 void on_read(uv_stream_t *stream, ssize_t read_len, const uv_buf_t *_);
 void on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *buf);
+// TODO: Rewrite usage of requests
 struct cobra_tcp_connection_t {
     /* Main loop */
     uv_loop_t loop;

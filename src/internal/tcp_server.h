@@ -23,6 +23,7 @@ typedef void (*server_connection_cb)(cobra_tcp_server_t *server, cobra_tcp_conne
 typedef void (*server_close_cb)(cobra_tcp_server_t *server, int status);
 
 #ifdef COBRA_TCP_SERVER_PRIVATE
+// TODO: Rewrite usage of requests
 struct cobra_tcp_server_t {
     /* Main loop */
     uv_loop_t loop;
