@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #define COBRA_TCP_CONNECTION_PRIVATE
+
 #include "tcp_connection.h"
 
 cobra_tcp_connection_t *cobra_tcp_connection_create(
@@ -187,7 +188,7 @@ int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data,
 
     int full_packet_len = len + (int) sizeof(uint16_t);
 
-    uint8_t packet[full_packet_len];
+    uint8_t *packet = malloc(full_packet_len);
     memcpy(packet + sizeof(uint16_t), data, len);
 
     uint16_t packet_len = len;
@@ -204,13 +205,18 @@ int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data,
 
     uv_write_t *write_req = malloc(sizeof(uv_write_t));
 
+
     if (uv_write(write_req,
                  (uv_stream_t *) &connection->tcp_handle,
                  &write_buffer,
                  1,
                  connection_on_write))
+    {
+        free(packet);
         return COBRA_TCP_CONNECTION_ERR_WRITING;
+    }
 
+    free(packet);
     return COBRA_TCP_CONNECTION_OK;
 }
 
