@@ -26,6 +26,5 @@ target_link_libraries(cobra uv_a)
 # Main (for tests)
 # Remember to commit this line before commit
 add_executable(main src/main.c)
-target_link_options(main PUBLIC -fsanitize=address,undefined)
-
+target_link_options(main PUBLIC -Wall -Wpedantic -fsanitize=address,undefined,leak -O2)
 target_link_libraries(main cobra)

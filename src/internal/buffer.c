@@ -112,7 +112,7 @@ void cobra_buffer_fragment(cobra_buffer_t *buffer) {
     if (len == 0 || buffer->read_pos == 0)
         return;
 
-    memcpy(buffer->data, buffer->data + buffer->read_pos, len);
+    memmove(buffer->data, buffer->data + buffer->read_pos, len);
     buffer->read_pos = 0;
     buffer->write_pos = len;
 }

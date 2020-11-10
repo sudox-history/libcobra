@@ -20,7 +20,7 @@ cobra_tcp_connection_t *cobra_tcp_connection_create(
     connection->write_req.data = connection;
 
     connection->connected = false;
-    connection->buffer = cobra_buffer_create(50002);
+    connection->buffer = cobra_buffer_create(COBRA_TCP_CONNECTION_MAX_PACKET_SIZE);
     connection->packet_len = 0;
 
     return connection;

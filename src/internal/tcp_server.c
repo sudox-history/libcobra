@@ -9,6 +9,7 @@ cobra_tcp_server_t *cobra_server_create() {
 
     server->loop.data = server;
     server->tcp_handle.data = server;
+    server->listening = false;
 
     return server;
 }
