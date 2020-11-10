@@ -177,6 +177,7 @@ bool is_platform_big_endian() {
 }
 
 void connection_on_write(uv_write_t *req, int status) {
+    free(req->bufs);
     free(req);
 }
 
@@ -205,18 +206,13 @@ int cobra_tcp_connection_send(cobra_tcp_connection_t *connection, uint8_t *data,
 
     uv_write_t *write_req = malloc(sizeof(uv_write_t));
 
-
     if (uv_write(write_req,
                  (uv_stream_t *) &connection->tcp_handle,
                  &write_buffer,
                  1,
                  connection_on_write))
-    {
-        free(packet);
         return COBRA_TCP_CONNECTION_ERR_WRITING;
-    }
 
-    free(packet);
     return COBRA_TCP_CONNECTION_OK;
 }
 

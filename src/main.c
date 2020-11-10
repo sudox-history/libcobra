@@ -51,7 +51,7 @@ void on_connected_abccc(cobra_tcp_connection_t *connection) {
     uint8_t data[65535];
 
     while (true) {
-        int read_size = read(fd1, data, 50000);
+        int read_size = read(fd1, data, 5000);
 
         printf("READ DATA: %d\n", read_size);
         if (read_size <= 0) {
@@ -85,7 +85,7 @@ int main() {
     uv_thread_create(&thread, run_server, 0);
 
     uv_thread_t thread2;
-    uv_thread_create(&thread, read_file, 0);
+    uv_thread_create(&thread2, read_file, 0);
 
     cobra_discovery_t *discovery = cobra_discovery_create();
     cobra_discovery_listen(discovery);
