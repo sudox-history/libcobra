@@ -4,27 +4,29 @@ project(libcobra C)
 set(CMAKE_C_STANDARD 11)
 
 # libuv
+# v1.40.0
 add_subdirectory(deps/libuv)
 
 # libcobra
-add_library(cobra
-        src/internal/buffer.c
-        src/internal/buffer.h
-        src/internal/tcp_connection.c
-        src/internal/tcp_connection.h
-        src/internal/discovery.c
-        src/internal/discovery.h
-        src/internal/tcp_server.c
-        src/internal/tcp_server.h)
-target_include_directories(cobra
-        PUBLIC include src)
+# Current library
+add_library(cobra_a
+        src/buffer.c
+        src/buffer.h
+        src/tools.c
+        src/tools.h)
+
+target_include_directories(cobra_a
+        PUBLIC include
+        PRIVATE src)
+
+target_link_libraries(cobra_a
+        PUBLIC uv_a)
 
 
-# linking libuv to libcobra
-target_link_libraries(cobra uv_a)
+# Main
+# Used for fast testing during development
+add_executable(main
+        src/main.c)
 
-# Main (for tests)
-# Remember to commit this line before commit
-# add_executable(main src/main.c)
-# target_link_options(main PUBLIC -Wall -Wpedantic -fsanitize=address,undefined,leak -O2)
-# target_link_libraries(main cobra)
+target_link_libraries(main
+        cobra_a)
