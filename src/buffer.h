@@ -1,12 +1,14 @@
 #ifndef COBRA_BUFFER_H
 #define COBRA_BUFFER_H
 
-#include <stdbool.h>
 #include <stdint.h>
+#ifdef COBRA_BUFFER_PRIVATE
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include "tools.h"
+#endif
 
 typedef struct cobra_buffer_t {
     int size;

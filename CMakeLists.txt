@@ -30,3 +30,6 @@ add_executable(main
 
 target_link_libraries(main
         cobra_a)
+
+target_link_options(main
+        PUBLIC -fsanitize=address,undefined,leak)
