@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "tools.h"
+
+#define COBRA_TRANSPORT_SOCKET_PRIVATE
+#include "transport_socket.h"
 
 int main() {
-    uint8_t data[] = {1, 2, 3, 4};
-    cobra_tools_array_reverse(data, 4);
-    cobra_tools_array_print(data, 4);
+    printf("%d\n", CORBA_PACKET_MAX_SIZE);
 }

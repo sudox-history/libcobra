@@ -1,15 +1,18 @@
 #define COBRA_BUFFER_PRIVATE
 #include "buffer.h"
 
-void cobra_buffer_init(cobra_buffer_t *buffer, int size) {
+cobra_buffer_t *cobra_buffer_create(int size) {
+    cobra_buffer_t *buffer = malloc(size);
     buffer->size = size;
     buffer->head_pointer = malloc(size);
     buffer->read_pointer = buffer->head_pointer;
     buffer->write_pointer = buffer->head_pointer;
+    return buffer;
 }
 
-void cobra_buffer_deinit(cobra_buffer_t *buffer) {
+void cobra_buffer_destroy(cobra_buffer_t *buffer) {
     free(buffer->head_pointer);
+    free(buffer);
 }
 
 int cobra_buffer_length(cobra_buffer_t *buffer) {

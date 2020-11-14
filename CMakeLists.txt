@@ -13,7 +13,9 @@ add_library(cobra_a
         src/buffer.c
         src/buffer.h
         src/tools.c
-        src/tools.h)
+        src/tools.h
+        src/transport_socket.c
+        src/transport_socket.h)
 
 target_include_directories(cobra_a
         PUBLIC include

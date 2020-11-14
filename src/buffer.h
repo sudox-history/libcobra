@@ -10,15 +10,19 @@
 #include "tools.h"
 #endif
 
-typedef struct cobra_buffer_t {
+typedef struct cobra_buffer_t cobra_buffer_t;
+
+#ifdef COBRA_BUFFER_PRIVATE
+struct cobra_buffer_t {
     int size;
     uint8_t *head_pointer;
     uint8_t *read_pointer;
     uint8_t *write_pointer;
-} cobra_buffer_t;
+};
+#endif
 
-void cobra_buffer_init(cobra_buffer_t *buffer, int size);
-void cobra_buffer_deinit(cobra_buffer_t *buffer);
+cobra_buffer_t *cobra_buffer_create(int size);
+void cobra_buffer_destroy(cobra_buffer_t *buffer);
 
 int cobra_buffer_length(cobra_buffer_t *buffer);
 int cobra_buffer_capacity(cobra_buffer_t *buffer);
