@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+
 bool cobra_tools_is_platform_big_endian();
 
 void cobra_tools_array_reverse(uint8_t *data, int length);
