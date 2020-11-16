@@ -10,16 +10,23 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
     socket->tcp_handle.data = socket;
 
     socket->connected = false;
+    socket->alive = false;
+    socket->closing = false;
+    socket->close_error = COBRA_SOCKET_OK;
+    socket->need_drain = false;
+
     socket->write_queue_size = write_queue_size;
     socket->write_queue_length = 0;
-    socket->read_buffer = cobra_buffer_create(COBRA_SOCKET_PACKET_MAX_SIZE);
+    cobra_buffer_init(&socket->read_buffer, COBRA_SOCKET_PACKET_MAX_SIZE);
     socket->read_packet_body_length = 0;
 
     socket->on_connect = NULL;
     socket->on_close = NULL;
     socket->on_alloc = NULL;
     socket->on_data = NULL;
+    socket->on_drain = NULL;
 
+    socket->data = NULL;
     return socket;
 }
 
@@ -27,7 +34,7 @@ void cobra_socket_destroy(cobra_socket_t *socket) {
     if (socket->connected)
         cobra_socket_close(socket);
 
-    cobra_buffer_destroy(socket->read_buffer);
+    cobra_buffer_deinit(&socket->read_buffer);
     free(socket);
 }
 
@@ -35,22 +42,29 @@ static void cobra__socket_on_close(uv_handle_t *handle) {
     cobra_socket_t *socket = handle->data;
 
     socket->connected = false;
+    socket->alive = false;
+    socket->closing = false;
+
     if (socket->on_close)
         socket->on_close(socket, socket->close_error);
 }
 
 static void cobra__socket_close(cobra_socket_t *socket, int error) {
+    if (socket->closing)
+        return;
+
+    socket->closing = true;
     socket->close_error = error;
 
     uv_close((uv_handle_t *) &socket->tcp_handle,
              cobra__socket_on_close);
 }
 
-static void cobra__socket_on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *buf) {
+static void cobra__socket_on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *read_buffer) {
     cobra_socket_t *socket = handle->data;
 
-    buf->base = (char *) cobra_buffer_write_pointer(socket->read_buffer);
-    buf->len = cobra_buffer_capacity(socket->read_buffer);
+    read_buffer->base = (char *) cobra_buffer_write_pointer(&socket->read_buffer);
+    read_buffer->len = cobra_buffer_capacity(&socket->read_buffer);
 }
 
 static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_length, const uv_buf_t *buf) {
@@ -64,17 +78,17 @@ static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_lengt
     // TODO: Update timer
 
     // Skipping wrote bytes
-    cobra_buffer_write_void(socket->read_buffer, read_length);
+    cobra_buffer_write_void(&socket->read_buffer, read_length);
 
     while (true) {
         if (!socket->read_packet_body_length) {
             // Packet header not received
-            if (cobra_buffer_length(socket->read_buffer) < COBRA_SOCKET_PACKET_HEADER_LENGTH)
+            if (cobra_buffer_length(&socket->read_buffer) < COBRA_SOCKET_PACKET_HEADER_LENGTH)
                 break;
 
             // Reading header
             socket->read_packet_body_length = cobra_buffer_read_uint(
-                    socket->read_buffer,
+                    &socket->read_buffer,
                     COBRA_SOCKET_PACKET_HEADER_LENGTH
             );
 
@@ -88,7 +102,7 @@ static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_lengt
         }
 
         // Packet body not received
-        if (socket->read_packet_body_length > cobra_buffer_length(socket->read_buffer))
+        if (socket->read_packet_body_length > cobra_buffer_length(&socket->read_buffer))
             break;
 
         // Handling packet if we have on_alloc & on_data callbacks
@@ -96,15 +110,15 @@ static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_lengt
             uint8_t *packet_body;
             socket->on_alloc(socket, &packet_body, socket->read_packet_body_length);
 
-            cobra_buffer_read(socket->read_buffer, packet_body, socket->read_packet_body_length);
+            cobra_buffer_read(&socket->read_buffer, packet_body, socket->read_packet_body_length);
             socket->on_data(socket, packet_body, socket->read_packet_body_length);
         } else
-            cobra_buffer_read_void(socket->read_buffer, socket->read_packet_body_length);
+            cobra_buffer_read_void(&socket->read_buffer, socket->read_packet_body_length);
 
         socket->read_packet_body_length = 0;
     }
 
-    cobra_buffer_fragment(socket->read_buffer);
+    cobra_buffer_fragment(&socket->read_buffer);
 }
 
 static void cobra__socket_on_connected(uv_connect_t *connect_req, int error) {
@@ -151,8 +165,7 @@ int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port) {
         return COBRA_SOCKET_ERR_ALREADY_CONNECTED;
 
     socket->connected = true;
-    socket->host = host;
-    socket->port = port;
+    socket->alive = true;
 
     uv_getaddrinfo_t *getaddrinfo_req = malloc(sizeof(uv_getaddrinfo_t));
     getaddrinfo_req->data = socket;
@@ -176,6 +189,82 @@ int cobra_socket_close(cobra_socket_t *socket) {
     return COBRA_SOCKET_OK;
 }
 
-int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
+typedef struct cobra__socket_write_context {
+    cobra_socket_t *socket;
+    cobra_buffer_t packet;
+    uv_write_t write_req;
+} cobra__socket_write_context;
 
+void cobra__socket_on_write(uv_write_t *write_req, int error) {
+    cobra__socket_write_context *context = write_req->data;
+
+    if (error) {
+        cobra__socket_close(context->socket, COBRA_SOCKET_ERR_WRITING);
+        return;
+    }
+
+    // Calling drain callback only if we need it
+    if (context->socket->on_drain && context->socket->need_drain) {
+        context->socket->on_drain(context->socket);
+        context->socket->need_drain = false;
+    }
+
+    // Decreasing queue length
+    context->socket->write_queue_length -= 1;
+
+    cobra_buffer_deinit(&context->packet);
+    free(context);
+}
+
+int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
+    if (!socket->connected)
+        return COBRA_SOCKET_ERR_NOT_CONNECTED;
+
+    if (socket->write_queue_length == socket->write_queue_size) {
+        socket->need_drain = true;
+        return COBRA_SOCKET_ERR_QUEUE_OVERFLOW;
+    }
+
+    cobra__socket_write_context *context = malloc(sizeof(cobra__socket_write_context));
+    cobra_buffer_init(&context->packet, length + COBRA_SOCKET_PACKET_HEADER_LENGTH);
+    context->write_req.data = context;
+
+    cobra_buffer_write_uint(&context->packet, length, COBRA_SOCKET_PACKET_HEADER_LENGTH);
+    cobra_buffer_write(&context->packet, data, length);
+
+    uv_buf_t write_buffer = {
+            .base = (char *) cobra_buffer_read_pointer(&context->packet),
+            .len = cobra_buffer_length(&context->packet)
+    };
+
+    uv_write(&context->write_req,
+             (uv_stream_t *) &socket->tcp_handle,
+             &write_buffer,
+             1,
+             cobra__socket_on_write);
+
+    // Increasing queue length
+    context->socket->write_queue_length += 1;
+
+    return COBRA_SOCKET_OK;
+}
+
+void cobra_socket_set_data(cobra_socket_t *socket, void *data) {
+    socket->data = data;
+}
+
+void *cobra_socket_get_data(cobra_socket_t *socket) {
+    return socket->data;
+}
+
+void cobra_socket_set_callbacks(cobra_socket_t *socket, cobra_socket_connect_cb on_connect,
+                                cobra_socket_close_cb on_close,
+                                cobra_socket_alloc_cb on_alloc,
+                                cobra_socket_data_cb on_data,
+                                cobra_socket_drain_cb on_drain) {
+    socket->on_connect = on_connect;
+    socket->on_close = on_close;
+    socket->on_alloc = on_alloc;
+    socket->on_data = on_data;
+    socket->on_drain = on_drain;
 }

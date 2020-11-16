@@ -5,10 +5,7 @@
 extern "C" {
 #endif
 
-#include "internal/discovery.h"
-#include "internal/tcp_connection.h"
-#include "internal/tcp_server.h"
-#include "internal/buffer.h"
+#include "socket.h"
 
 #ifdef __cplusplus
 }
