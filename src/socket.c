@@ -88,8 +88,7 @@ static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_lengt
 
             // Reading header
             socket->read_packet_body_length =
-                    cobra_buffer_read_uint(&socket->read_buffer, COBRA_SOCKET_PACKET_HEADER_LENGTH)
-                    - COBRA_SOCKET_PACKET_HEADER_LENGTH;
+                    cobra_buffer_read_uint(&socket->read_buffer, COBRA_SOCKET_PACKET_HEADER_LENGTH);
 
             // If packet length == 0 we received ping packet
             if (socket->read_packet_body_length == 0)
@@ -226,7 +225,7 @@ int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
     context->write_req.data = context;
 
     cobra_buffer_write_uint(&context->packet,
-                            length + COBRA_SOCKET_PACKET_HEADER_LENGTH,
+                            length,
                             COBRA_SOCKET_PACKET_HEADER_LENGTH);
     cobra_buffer_write(&context->packet, data, length);
 
