@@ -127,7 +127,7 @@ bool cobra_buffer_equals(cobra_buffer_t *buffer, const uint8_t *data, uint64_t l
         return false;
 
     for (int i = 0; i < length; i++) {
-        if (buffer->head_pointer[i] != data[i])
+        if (buffer->read_pointer[i] != data[i])
             return false;
     }
 

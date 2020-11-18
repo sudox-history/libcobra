@@ -84,7 +84,7 @@ void cobra__discovery_on_listener_data(uv_udp_t *handle,
     // Skipping wrote bytes
     cobra_buffer_write_void(&discovery->read_buffer, read_length);
 
-    if (cobra_buffer_equals(&discovery->read_buffer,
+    if (!cobra_buffer_equals(&discovery->read_buffer,
                             COBRA_DISCOVERY_PACKET,
                             sizeof(COBRA_DISCOVERY_PACKET)))
         return;
@@ -162,7 +162,7 @@ void cobra__discovery_on_scanner_data(uv_udp_t *handle,
     // Skipping wrote bytes
     cobra_buffer_write_void(&discovery->read_buffer, read_length);
 
-    if (cobra_buffer_equals(&discovery->read_buffer,
+    if (!cobra_buffer_equals(&discovery->read_buffer,
                             COBRA_DISCOVERY_PACKET,
                             sizeof(COBRA_DISCOVERY_PACKET)))
         return;
@@ -193,7 +193,7 @@ int cobra_discovery_scan(cobra_discovery_t *discovery) {
 
     uv_timer_start(&discovery->timer_handle,
                    cobra__discovery_on_scanner_time,
-                   COBRA_DISCOVERY_TIMEOUT,
+                   0,
                    COBRA_DISCOVERY_TIMEOUT);
 
     uv_udp_recv_start(&discovery->udp_handle,
