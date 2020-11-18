@@ -22,6 +22,7 @@ uint8_t COBRA_DISCOVERY_PACKET[] = {8, 100, 193, 210, 19};
 #define COBRA_DISCOVERY_BROADCAST_ADDR "239.255.255.250"
 #define COBRA_DISCOVERY_PORT 55669
 #define COBRA_DISCOVERY_TIMEOUT 5000
+#define COBRA_DISCOVERY_HOST_STRLEN 16
 #endif
 
 typedef struct cobra_discovery_t cobra_discovery_t;
@@ -51,6 +52,9 @@ struct cobra_discovery_t {
     /* Callbacks */
     cobra_discovery_found_cb on_found;
     cobra_discovery_close_cb on_close;
+
+    /* Other */
+    void *data;
 };
 #endif
 
@@ -59,5 +63,7 @@ void cobra_discovery_destroy(cobra_discovery_t *discovery);
 
 int cobra_discovery_listen(cobra_discovery_t *discovery);
 int cobra_discovery_scan(cobra_discovery_t *discovery);
+
+int cobra_discovery_close(cobra_discovery_t *discovery);
 
 #endif //COBRA_DISCOVERY_H

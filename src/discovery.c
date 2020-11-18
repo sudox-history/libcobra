@@ -166,7 +166,11 @@ void cobra__discovery_on_scanner_data(uv_udp_t *handle,
                             sizeof(COBRA_DISCOVERY_PACKET)))
         return;
 
-    
+    char host[COBRA_DISCOVERY_HOST_STRLEN];
+    uv_ip4_name((const struct sockaddr_in *) addr, host, COBRA_DISCOVERY_HOST_STRLEN);
+
+    if (discovery->on_found)
+        discovery->on_found(discovery, host);
 }
 
 int cobra_discovery_scan(cobra_discovery_t *discovery) {
@@ -196,4 +200,20 @@ int cobra_discovery_scan(cobra_discovery_t *discovery) {
                       cobra__discovery_on_scanner_data);
 
     return COBRA_DISCOVERY_OK;
+}
+
+int cobra_discovery_close(cobra_discovery_t *discovery) {
+    if (discovery->is_listening || discovery->is_scanning)
+        return COBRA_DISCOVERY_ERR_ALREADY_STARTED;
+
+    cobra__discovery_close(discovery, COBRA_DISCOVERY_OK);
+    return COBRA_DISCOVERY_OK;
+}
+
+void cobra_discovery_set_data(cobra_discovery_t *discovery, void *data) {
+    discovery->data = data;
+}
+
+void *cobra_discovery_get_data(cobra_discovery_t *discovery) {
+    return discovery->data;
 }
