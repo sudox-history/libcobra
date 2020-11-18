@@ -66,4 +66,7 @@ int cobra_discovery_scan(cobra_discovery_t *discovery);
 
 int cobra_discovery_close(cobra_discovery_t *discovery);
 
+void cobra_discovery_set_data(cobra_discovery_t *discovery, void *data);
+void *cobra_discovery_get_data(cobra_discovery_t *discovery);
+
 #endif //COBRA_DISCOVERY_H
