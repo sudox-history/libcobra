@@ -123,6 +123,7 @@ int cobra_discovery_listen(cobra_discovery_t *discovery) {
                       cobra__discovery_on_alloc,
                       cobra__discovery_on_listener_data);
 
+    uv_run(&discovery->loop, UV_RUN_DEFAULT);
     return COBRA_DISCOVERY_OK;
 }
 
@@ -199,6 +200,7 @@ int cobra_discovery_scan(cobra_discovery_t *discovery) {
                       cobra__discovery_on_alloc,
                       cobra__discovery_on_scanner_data);
 
+    uv_run(&discovery->loop, UV_RUN_DEFAULT);
     return COBRA_DISCOVERY_OK;
 }
 
@@ -216,4 +218,11 @@ void cobra_discovery_set_data(cobra_discovery_t *discovery, void *data) {
 
 void *cobra_discovery_get_data(cobra_discovery_t *discovery) {
     return discovery->data;
+}
+
+void cobra_discovery_set_callbacks(cobra_discovery_t *discovery,
+                                   cobra_discovery_found_cb on_found,
+                                   cobra_discovery_close_cb on_close) {
+    discovery->on_found = on_found;
+    discovery->on_close = on_close;
 }

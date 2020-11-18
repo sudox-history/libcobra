@@ -21,7 +21,7 @@ add_library(cobra_a
 
 target_include_directories(cobra_a
         PUBLIC include
-        PRIVATE src)
+        INTERFACE src)
 
 target_link_libraries(cobra_a
         PUBLIC uv_a)

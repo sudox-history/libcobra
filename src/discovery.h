@@ -69,4 +69,8 @@ int cobra_discovery_close(cobra_discovery_t *discovery);
 void cobra_discovery_set_data(cobra_discovery_t *discovery, void *data);
 void *cobra_discovery_get_data(cobra_discovery_t *discovery);
 
+void cobra_discovery_set_callbacks(cobra_discovery_t *discovery,
+                                   cobra_discovery_found_cb on_found,
+                                   cobra_discovery_close_cb on_close);
+
 #endif //COBRA_DISCOVERY_H
