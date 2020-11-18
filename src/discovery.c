@@ -85,8 +85,8 @@ void cobra__discovery_on_listener_data(uv_udp_t *handle,
     cobra_buffer_write_void(&discovery->read_buffer, read_length);
 
     if (!cobra_buffer_equals(&discovery->read_buffer,
-                            COBRA_DISCOVERY_PACKET,
-                            sizeof(COBRA_DISCOVERY_PACKET)))
+                             COBRA_DISCOVERY_PACKET,
+                             sizeof(COBRA_DISCOVERY_PACKET)))
         return;
 
     uv_buf_t send_buffer = {
@@ -103,6 +103,8 @@ void cobra__discovery_on_listener_data(uv_udp_t *handle,
                 1,
                 addr,
                 cobra__discovery_on_send);
+
+    cobra_buffer_clear(&discovery->read_buffer);
 }
 
 int cobra_discovery_listen(cobra_discovery_t *discovery) {
@@ -163,8 +165,8 @@ void cobra__discovery_on_scanner_data(uv_udp_t *handle,
     cobra_buffer_write_void(&discovery->read_buffer, read_length);
 
     if (!cobra_buffer_equals(&discovery->read_buffer,
-                            COBRA_DISCOVERY_PACKET,
-                            sizeof(COBRA_DISCOVERY_PACKET)))
+                             COBRA_DISCOVERY_PACKET,
+                             sizeof(COBRA_DISCOVERY_PACKET)))
         return;
 
     char host[COBRA_DISCOVERY_HOST_STRLEN];
@@ -172,6 +174,8 @@ void cobra__discovery_on_scanner_data(uv_udp_t *handle,
 
     if (discovery->on_found)
         discovery->on_found(discovery, host);
+
+    cobra_buffer_clear(&discovery->read_buffer);
 }
 
 int cobra_discovery_scan(cobra_discovery_t *discovery) {
