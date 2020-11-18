@@ -2,8 +2,8 @@
 #define COBRA_BUFFER_H
 
 #include <stdint.h>
-#ifdef COBRA_BUFFER_PRIVATE
 #include <stdbool.h>
+#ifdef COBRA_BUFFER_PRIVATE
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,5 +38,7 @@ void cobra_buffer_read(cobra_buffer_t *buffer, uint8_t *data, uint64_t length);
 uint64_t cobra_buffer_read_uint(cobra_buffer_t *buffer, int length);
 void cobra_buffer_read_void(cobra_buffer_t *buffer, uint64_t length);
 uint8_t *cobra_buffer_read_pointer(cobra_buffer_t *buffer);
+
+bool cobra_buffer_equals(cobra_buffer_t *buffer, const uint8_t *data, uint64_t length);
 
 #endif //COBRA_BUFFER_H

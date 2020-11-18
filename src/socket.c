@@ -9,14 +9,15 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
     socket->loop.data = socket;
     socket->tcp_handle.data = socket;
 
-    socket->connected = false;
-    socket->alive = false;
-    socket->closing = false;
+    socket->is_connected = false;
+    socket->is_alive = false;
+    socket->is_overflowed = false;
+    socket->is_closing = false;
     socket->close_error = COBRA_SOCKET_OK;
-    socket->need_drain = false;
 
     socket->write_queue_size = write_queue_size;
     socket->write_queue_length = 0;
+
     cobra_buffer_init(&socket->read_buffer, COBRA_SOCKET_PACKET_MAX_SIZE);
     socket->read_packet_body_length = 0;
 
@@ -31,7 +32,7 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
 }
 
 void cobra_socket_destroy(cobra_socket_t *socket) {
-    if (socket->connected)
+    if (socket->is_connected)
         cobra_socket_close(socket);
 
     cobra_buffer_deinit(&socket->read_buffer);
@@ -41,19 +42,25 @@ void cobra_socket_destroy(cobra_socket_t *socket) {
 static void cobra__socket_on_close(uv_handle_t *handle) {
     cobra_socket_t *socket = handle->data;
 
-    socket->connected = false;
-    socket->alive = false;
-    socket->closing = false;
+    socket->is_connected = false;
+    socket->is_alive = false;
+    socket->is_overflowed = false;
+    socket->is_closing = false;
+
+    socket->write_queue_length = 0;
+
+    cobra_buffer_clear(&socket->read_buffer);
+    socket->read_packet_body_length = 0;
 
     if (socket->on_close)
         socket->on_close(socket, socket->close_error);
 }
 
 static void cobra__socket_close(cobra_socket_t *socket, int error) {
-    if (socket->closing)
+    if (socket->is_closing)
         return;
 
-    socket->closing = true;
+    socket->is_closing = true;
     socket->close_error = error;
 
     uv_close((uv_handle_t *) &socket->tcp_handle,
@@ -143,6 +150,9 @@ static void cobra__socket_on_resolved(uv_getaddrinfo_t *getaddrinfo_req, int err
         return;
     }
 
+    // Adding port to address
+    ((struct sockaddr_in *) addrinfo->ai_addr)->sin_port = socket->port;
+
     uv_connect_t *connect_req = malloc(sizeof(uv_connect_t));
     connect_req->data = socket;
 
@@ -156,12 +166,15 @@ static void cobra__socket_on_resolved(uv_getaddrinfo_t *getaddrinfo_req, int err
     free(getaddrinfo_req);
 }
 
-int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port) {
-    if (socket->connected)
+int cobra_socket_connect(cobra_socket_t *socket, char *host, int port) {
+    if (socket->is_connected)
         return COBRA_SOCKET_ERR_ALREADY_CONNECTED;
 
-    socket->connected = true;
-    socket->alive = true;
+    socket->host = host;
+    socket->port = port;
+
+    socket->is_connected = true;
+    socket->is_alive = true;
 
     uv_getaddrinfo_t *getaddrinfo_req = malloc(sizeof(uv_getaddrinfo_t));
     getaddrinfo_req->data = socket;
@@ -170,7 +183,7 @@ int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port) {
                    getaddrinfo_req,
                    cobra__socket_on_resolved,
                    host,
-                   port,
+                   NULL,
                    NULL);
 
     uv_run(&socket->loop, UV_RUN_DEFAULT);
@@ -178,7 +191,7 @@ int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port) {
 }
 
 int cobra_socket_close(cobra_socket_t *socket) {
-    if (!socket->connected)
+    if (!socket->is_connected)
         return COBRA_SOCKET_ERR_NOT_CONNECTED;
 
     cobra__socket_close(socket, COBRA_SOCKET_OK);
@@ -200,9 +213,9 @@ void cobra__socket_on_write(uv_write_t *write_req, int error) {
     }
 
     // Calling drain callback only if we need it
-    if (context->socket->on_drain && context->socket->need_drain) {
+    if (context->socket->on_drain && context->socket->is_overflowed) {
         context->socket->on_drain(context->socket);
-        context->socket->need_drain = false;
+        context->socket->is_overflowed = false;
     }
 
     // Decreasing queue length
@@ -213,11 +226,11 @@ void cobra__socket_on_write(uv_write_t *write_req, int error) {
 }
 
 int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
-    if (!socket->connected)
+    if (!socket->is_connected)
         return COBRA_SOCKET_ERR_NOT_CONNECTED;
 
     if (socket->write_queue_length == socket->write_queue_size) {
-        socket->need_drain = true;
+        socket->is_overflowed = true;
         return COBRA_SOCKET_ERR_QUEUE_OVERFLOW;
     }
 

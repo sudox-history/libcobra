@@ -121,3 +121,15 @@ void cobra_buffer_read_void(cobra_buffer_t *buffer, uint64_t length) {
 uint8_t *cobra_buffer_read_pointer(cobra_buffer_t *buffer) {
     return buffer->read_pointer;
 }
+
+bool cobra_buffer_equals(cobra_buffer_t *buffer, const uint8_t *data, uint64_t length) {
+    if (cobra_buffer_length(buffer) != length)
+        return false;
+
+    for (int i = 0; i < length; i++) {
+        if (buffer->head_pointer[i] != data[i])
+            return false;
+    }
+
+    return true;
+}

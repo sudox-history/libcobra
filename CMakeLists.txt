@@ -15,7 +15,9 @@ add_library(cobra_a
         src/tools.c
         src/tools.h
         src/socket.c
-        src/socket.h)
+        src/socket.h
+        src/discovery.c
+        src/discovery.h)
 
 target_include_directories(cobra_a
         PUBLIC include
@@ -34,4 +36,4 @@ target_link_libraries(main
         cobra_a)
 
 target_link_options(main
-        PUBLIC -fsanitize=address,undefined,leak)
+        PUBLIC -fsanitize=address,undefined)

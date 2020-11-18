@@ -42,23 +42,27 @@ typedef void (*cobra_socket_drain_cb)
 
 #ifdef COBRA_SOCKET_PRIVATE
 struct cobra_socket_t {
-    /* Libuv handles */
+    /* Libuv */
     uv_loop_t loop;
     uv_tcp_t tcp_handle;
     uv_timer_t timer_handle;
 
-    /* Connection management */
-    bool connected;
-    bool alive;
-    bool closing;
-    int close_error;
-    bool need_drain;
+    /* Info */
+    char *host;
+    int port;
 
-    /* Write management */
+    /* Management */
+    bool is_connected;
+    bool is_alive;
+    bool is_overflowed;
+    bool is_closing;
+    int close_error;
+
+    /* Write */
     int write_queue_size;
     int write_queue_length;
 
-    /* Read management */
+    /* Read */
     cobra_buffer_t read_buffer;
     uint64_t read_packet_body_length;
 
@@ -69,7 +73,7 @@ struct cobra_socket_t {
     cobra_socket_data_cb on_data;
     cobra_socket_drain_cb on_drain;
 
-    /* Additional user data */
+    /* Other */
     void *data;
 };
 #endif
@@ -77,7 +81,7 @@ struct cobra_socket_t {
 cobra_socket_t *cobra_socket_create(int write_queue_size);
 void cobra_socket_destroy(cobra_socket_t *socket);
 
-int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port);
+int cobra_socket_connect(cobra_socket_t *socket, char *host, int port);
 int cobra_socket_close(cobra_socket_t *socket);
 
 int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length);
