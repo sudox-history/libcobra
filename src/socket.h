@@ -96,4 +96,10 @@ void cobra_socket_set_callbacks(cobra_socket_t *socket, cobra_socket_connect_cb 
                                 cobra_socket_data_cb on_data,
                                 cobra_socket_drain_cb on_drain);
 
+// Necessary functions for server
+#ifdef COBRA_SOCKET_PRIVATE
+void cobra__socket_on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *read_buffer);
+void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_length, const uv_buf_t *buf);
+#endif
+
 #endif //COBRA_SOCKET_H

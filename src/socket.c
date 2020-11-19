@@ -59,7 +59,7 @@ static void cobra__socket_on_close(uv_handle_t *handle) {
         socket->on_close(socket, socket->close_error);
 }
 
-static void cobra__socket_close(cobra_socket_t *socket, int error) {
+void cobra__socket_close(cobra_socket_t *socket, int error) {
     if (socket->is_closing)
         return;
 
@@ -70,14 +70,14 @@ static void cobra__socket_close(cobra_socket_t *socket, int error) {
              cobra__socket_on_close);
 }
 
-static void cobra__socket_on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *read_buffer) {
+void cobra__socket_on_alloc(uv_handle_t *handle, size_t _, uv_buf_t *read_buffer) {
     cobra_socket_t *socket = handle->data;
 
     read_buffer->base = (char *) cobra_buffer_write_pointer(&socket->read_buffer);
     read_buffer->len = cobra_buffer_capacity(&socket->read_buffer);
 }
 
-static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_length, const uv_buf_t *buf) {
+void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_length, const uv_buf_t *buf) {
     cobra_socket_t *socket = stream_handle->data;
 
     if (read_length <= 0) {
@@ -126,7 +126,7 @@ static void cobra__socket_on_data(uv_stream_t *stream_handle, ssize_t read_lengt
     cobra_buffer_fragment(&socket->read_buffer);
 }
 
-static void cobra__socket_on_connected(uv_connect_t *connect_req, int error) {
+void cobra__socket_on_connect(uv_connect_t *connect_req, int error) {
     cobra_socket_t *socket = connect_req->data;
 
     if (error) {
@@ -144,7 +144,7 @@ static void cobra__socket_on_connected(uv_connect_t *connect_req, int error) {
     free(connect_req);
 }
 
-static void cobra__socket_on_resolved(uv_getaddrinfo_t *getaddrinfo_req, int error, struct addrinfo *addrinfo) {
+void cobra__socket_on_resolve(uv_getaddrinfo_t *getaddrinfo_req, int error, struct addrinfo *addrinfo) {
     cobra_socket_t *socket = getaddrinfo_req->data;
 
     if (error) {
@@ -161,7 +161,7 @@ static void cobra__socket_on_resolved(uv_getaddrinfo_t *getaddrinfo_req, int err
     uv_tcp_connect(connect_req,
                    &socket->tcp_handle,
                    addrinfo->ai_addr,
-                   cobra__socket_on_connected);
+                   cobra__socket_on_connect);
 
     // Specified in libuv docs
     uv_freeaddrinfo(addrinfo);
@@ -174,7 +174,6 @@ int cobra_socket_connect(cobra_socket_t *socket, char *host, int port) {
 
     socket->host = host;
     socket->port = port;
-
     socket->is_connected = true;
     socket->is_alive = true;
 
@@ -183,7 +182,7 @@ int cobra_socket_connect(cobra_socket_t *socket, char *host, int port) {
 
     uv_getaddrinfo(&socket->loop,
                    getaddrinfo_req,
-                   cobra__socket_on_resolved,
+                   cobra__socket_on_resolve,
                    host,
                    NULL,
                    NULL);

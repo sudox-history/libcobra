@@ -14,7 +14,7 @@ cobra_discovery_t *cobra_discovery_create() {
     cobra_buffer_init(&discovery->read_buffer, sizeof(COBRA_DISCOVERY_PACKET));
     discovery->is_listening = false;
     discovery->is_scanning = false;
-    discovery->is_closing = false;
+    discovery->is_closing = COBRA_DISCOVERY_OK;
 
     discovery->on_found = NULL;
     discovery->on_close = NULL;

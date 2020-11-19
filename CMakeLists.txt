@@ -16,6 +16,8 @@ add_library(cobra_a
         src/tools.h
         src/socket.c
         src/socket.h
+        src/server.c
+        src/server.h
         src/discovery.c
         src/discovery.h)
 

@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "socket.h"
+#include "server.h"
 #include "discovery.h"
 
 #ifdef __cplusplus
