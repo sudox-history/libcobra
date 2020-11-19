@@ -119,6 +119,12 @@ int cobra_discovery_listen(cobra_discovery_t *discovery) {
                     0))
         return COBRA_DISCOVERY_ERR_BINDING;
 
+    if ((uv_udp_set_membership(&discovery->udp_handle,
+                               COBRA_DISCOVERY_MULTICAST_ADDR,
+                               NULL,
+                               UV_JOIN_GROUP)))
+        return COBRA_DISCOVERY_ERR_JOINING_GROUP;
+
     discovery->is_listening = true;
 
     uv_udp_recv_start(&discovery->udp_handle,
@@ -133,7 +139,7 @@ void cobra__discovery_on_scanner_time(uv_timer_t *handle) {
     cobra_discovery_t *discovery = handle->data;
 
     struct sockaddr_in addr;
-    uv_ip4_addr(COBRA_DISCOVERY_BROADCAST_ADDR, COBRA_DISCOVERY_PORT, &addr);
+    uv_ip4_addr(COBRA_DISCOVERY_MULTICAST_ADDR, COBRA_DISCOVERY_PORT, &addr);
 
     uv_buf_t send_buffer = {
             .base = (char *) COBRA_DISCOVERY_PACKET,
@@ -189,9 +195,6 @@ int cobra_discovery_scan(cobra_discovery_t *discovery) {
                     (const struct sockaddr *) &bind_addr,
                     0))
         return COBRA_DISCOVERY_ERR_BINDING;
-
-    if (uv_udp_set_broadcast(&discovery->udp_handle, true))
-        return COBRA_DISCOVERY_ERR_STARTING_BROADCAST;
 
     discovery->is_scanning = true;
 
