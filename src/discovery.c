@@ -30,6 +30,11 @@ void cobra_discovery_destroy(cobra_discovery_t *discovery) {
 void cobra__discovery_on_close(uv_handle_t *handle) {
     cobra_discovery_t *discovery = handle->data;
 
+    // Necessary to re-init handles after uv_close
+    uv_udp_init(&discovery->loop, &discovery->udp_handle);
+    if (discovery->is_scanning)
+        uv_timer_init(&discovery->loop, &discovery->timer_handle);
+
     discovery->is_listening = false;
     discovery->is_scanning = false;
     discovery->is_closing = false;
@@ -212,7 +217,7 @@ int cobra_discovery_scan(cobra_discovery_t *discovery) {
 }
 
 int cobra_discovery_close(cobra_discovery_t *discovery) {
-    if (discovery->is_listening || discovery->is_scanning)
+    if (!discovery->is_listening && !discovery->is_scanning)
         return COBRA_DISCOVERY_ERR_ALREADY_STARTED;
 
     cobra__discovery_close(discovery, COBRA_DISCOVERY_OK);

@@ -42,6 +42,9 @@ void cobra_socket_destroy(cobra_socket_t *socket) {
 static void cobra__socket_on_close(uv_handle_t *handle) {
     cobra_socket_t *socket = handle->data;
 
+    // Necessary to re-init handles after uv_close
+    uv_tcp_init(&socket->loop, &socket->tcp_handle);
+
     socket->is_connected = false;
     socket->is_alive = false;
     socket->is_overflowed = false;
