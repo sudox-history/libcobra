@@ -17,7 +17,7 @@ Fast and simple data live-transfer protocol between 2 participants in a connecti
 
 ## Features
 
-* Collecting data in packates instead of a byte stream
-* Searching devices in a LAN which supports libcobra protocol
-* Maintaining a connection using duplex ping technology
+* Collecting data in packets instead of a byte stream
+* Searching devices in a LAN that supports the libcobra protocol
+* Maintaining a connection using a duplex ping technology
 * TLS encryption support
