@@ -37,7 +37,7 @@ struct cobra_server_t {
 
     /* Info */
     char *host;
-    int port;
+    char *port;
 
     /* Management */
     bool is_listening;
@@ -57,7 +57,7 @@ struct cobra_server_t {
 cobra_server_t *cobra_server_create(int socket_write_queue_size);
 void cobra_server_destroy(cobra_server_t *server);
 
-int cobra_server_listen(cobra_server_t *server, char *host, int port);
+int cobra_server_listen(cobra_server_t *server, char *host, char *port);
 int cobra_server_close(cobra_server_t *server);
 
 void cobra_server_set_data(cobra_server_t *server, void *data);

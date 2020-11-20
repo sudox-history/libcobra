@@ -87,9 +87,6 @@ void cobra__server_on_resolve(uv_getaddrinfo_t *getaddrinfo_req, int error, stru
         return;
     }
 
-    // Adding port to address
-    ((struct sockaddr_in *) addrinfo->ai_addr)->sin_port = server->port;
-
     if (uv_tcp_bind(&server->tcp_handle,
                     addrinfo->ai_addr,
                     0)) {
@@ -109,7 +106,7 @@ void cobra__server_on_resolve(uv_getaddrinfo_t *getaddrinfo_req, int error, stru
     free(getaddrinfo_req);
 }
 
-int cobra_server_listen(cobra_server_t *server, char *host, int port) {
+int cobra_server_listen(cobra_server_t *server, char *host, char *port) {
     if (server->is_listening)
         return COBRA_SERVER_ERR_ALREADY_LISTENING;
 
@@ -124,7 +121,7 @@ int cobra_server_listen(cobra_server_t *server, char *host, int port) {
                    getaddrinfo_req,
                    cobra__server_on_resolve,
                    host,
-                   NULL,
+                   port,
                    NULL);
 
     return COBRA_SERVER_OK;

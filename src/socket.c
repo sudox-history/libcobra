@@ -152,9 +152,6 @@ void cobra__socket_on_resolve(uv_getaddrinfo_t *getaddrinfo_req, int error, stru
         return;
     }
 
-    // Adding port to address
-    ((struct sockaddr_in *) addrinfo->ai_addr)->sin_port = socket->port;
-
     uv_connect_t *connect_req = malloc(sizeof(uv_connect_t));
     connect_req->data = socket;
 
@@ -168,7 +165,7 @@ void cobra__socket_on_resolve(uv_getaddrinfo_t *getaddrinfo_req, int error, stru
     free(getaddrinfo_req);
 }
 
-int cobra_socket_connect(cobra_socket_t *socket, char *host, int port) {
+int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port) {
     if (socket->is_connected)
         return COBRA_SOCKET_ERR_ALREADY_CONNECTED;
 
@@ -184,7 +181,7 @@ int cobra_socket_connect(cobra_socket_t *socket, char *host, int port) {
                    getaddrinfo_req,
                    cobra__socket_on_resolve,
                    host,
-                   NULL,
+                   port,
                    NULL);
 
     uv_run(&socket->loop, UV_RUN_DEFAULT);

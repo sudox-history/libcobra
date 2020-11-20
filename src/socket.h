@@ -50,7 +50,7 @@ struct cobra_socket_t {
 
     /* Info */
     char *host;
-    int port;
+    char *port;
 
     /* Management */
     bool is_connected;
@@ -82,7 +82,7 @@ struct cobra_socket_t {
 cobra_socket_t *cobra_socket_create(int write_queue_size);
 void cobra_socket_destroy(cobra_socket_t *socket);
 
-int cobra_socket_connect(cobra_socket_t *socket, char *host, int port);
+int cobra_socket_connect(cobra_socket_t *socket, char *host, char *port);
 int cobra_socket_close(cobra_socket_t *socket);
 
 int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length);
