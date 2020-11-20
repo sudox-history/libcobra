@@ -1,4 +1,4 @@
-#ifndef СOBRA_SERVER_H
+#ifndef COBRA_SERVER_H
 #define COBRA_SERVER_H
 
 #ifdef COBRA_SERVER_PRIVATE
@@ -10,7 +10,6 @@
 
 #define COBRA_SOCKET_PRIVATE
 #include "socket.h"
-
 #endif
 
 #define COBRA_SERVER_OK 0
