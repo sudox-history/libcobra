@@ -124,6 +124,7 @@ int cobra_server_listen(cobra_server_t *server, char *host, char *port) {
                    port,
                    NULL);
 
+    uv_run(&server->loop, UV_RUN_DEFAULT);
     return COBRA_SERVER_OK;
 }
 

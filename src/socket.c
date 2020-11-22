@@ -231,6 +231,7 @@ int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
         return COBRA_SOCKET_ERR_QUEUE_OVERFLOW;
 
     cobra__socket_write_context *context = malloc(sizeof(cobra__socket_write_context));
+    context->socket = socket;
     cobra_buffer_init(&context->packet, length + COBRA_SOCKET_PACKET_HEADER_LENGTH);
     context->write_req.data = context;
 
