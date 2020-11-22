@@ -11,14 +11,14 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
 
     socket->is_connected = false;
     socket->is_alive = false;
-    socket->is_overflowed = false;
+    socket->is_write_queue_full = false;
     socket->is_closing = false;
     socket->close_error = COBRA_SOCKET_OK;
 
     socket->write_queue_size = write_queue_size;
     socket->write_queue_length = 0;
 
-    cobra_buffer_init(&socket->read_buffer, COBRA_SOCKET_PACKET_MAX_SIZE);
+    cobra_buffer_init(&socket->read_buffer, COBRA_SOCKET_PACKET_MAX_LENGTH);
     socket->read_packet_body_length = 0;
 
     socket->on_connect = NULL;
@@ -47,7 +47,7 @@ static void cobra__socket_on_close(uv_handle_t *handle) {
 
     socket->is_connected = false;
     socket->is_alive = false;
-    socket->is_overflowed = false;
+    socket->is_write_queue_full = false;
     socket->is_closing = false;
 
     socket->write_queue_length = 0;
@@ -211,9 +211,9 @@ void cobra__socket_on_write(uv_write_t *write_req, int error) {
     }
 
     // Calling drain callback only if we need it
-    if (context->socket->on_drain && context->socket->is_overflowed) {
+    if (context->socket->on_drain && context->socket->is_write_queue_full) {
         context->socket->on_drain(context->socket);
-        context->socket->is_overflowed = false;
+        context->socket->is_write_queue_full = false;
     }
 
     // Decreasing queue length
@@ -227,10 +227,8 @@ int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
     if (!socket->is_connected)
         return COBRA_SOCKET_ERR_NOT_CONNECTED;
 
-    if (socket->write_queue_length == socket->write_queue_size) {
-        socket->is_overflowed = true;
+    if (socket->write_queue_length == socket->write_queue_size)
         return COBRA_SOCKET_ERR_QUEUE_OVERFLOW;
-    }
 
     cobra__socket_write_context *context = malloc(sizeof(cobra__socket_write_context));
     cobra_buffer_init(&context->packet, length + COBRA_SOCKET_PACKET_HEADER_LENGTH);
@@ -254,6 +252,11 @@ int cobra_socket_send(cobra_socket_t *socket, uint8_t *data, uint64_t length) {
 
     // Increasing queue length
     context->socket->write_queue_length += 1;
+
+    if (socket->write_queue_length == socket->write_queue_size) {
+        socket->is_write_queue_full = true;
+        return COBRA_SOCKET_ERR_QUEUE_FULL;
+    }
 
     return COBRA_SOCKET_OK;
 }

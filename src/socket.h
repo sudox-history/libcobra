@@ -12,17 +12,20 @@
 #endif
 
 #define COBRA_SOCKET_PACKET_HEADER_LENGTH 2u
-#define COBRA_SOCKET_PACKET_MAX_SIZE \
-    (int) ((1u << (8 * COBRA_SOCKET_PACKET_HEADER_LENGTH)) - 1) \
-    + COBRA_SOCKET_PACKET_HEADER_LENGTH
+#define COBRA_SOCKET_PACKET_BODY_MAX_LENGTH \
+    ((int) ((1u << (8 * COBRA_SOCKET_PACKET_HEADER_LENGTH)) - 1))
+#define COBRA_SOCKET_PACKET_MAX_LENGTH \
+    COBRA_SOCKET_PACKET_BODY_MAX_LENGTH \
+    + COBRA_SOCKET_PACKET_HEADER_LENGTH)
 
 #define COBRA_SOCKET_OK 0
 #define COBRA_SOCKET_ERR_ALREADY_CONNECTED 1
 #define COBRA_SOCKET_ERR_NOT_CONNECTED 2
 #define COBRA_SOCKET_ERR_RESOLVING 3
 #define COBRA_SOCKET_ERR_CONNECTING 4
-#define COBRA_SOCKET_ERR_QUEUE_OVERFLOW 5
-#define COBRA_SOCKET_ERR_WRITING 6
+#define COBRA_SOCKET_ERR_QUEUE_FULL 5
+#define COBRA_SOCKET_ERR_QUEUE_OVERFLOW 6
+#define COBRA_SOCKET_ERR_WRITING 7
 
 typedef struct cobra_socket_t cobra_socket_t;
 
@@ -55,7 +58,7 @@ struct cobra_socket_t {
     /* Management */
     bool is_connected;
     bool is_alive;
-    bool is_overflowed;
+    bool is_write_queue_full;
     bool is_closing;
     int close_error;
 
