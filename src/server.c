@@ -129,6 +129,14 @@ int cobra_server_listen(cobra_server_t *server, char *host, char *port) {
     return COBRA_SERVER_OK;
 }
 
+int cobra_server_close(cobra_server_t *server) {
+    if (!server->is_listening)
+        return COBRA_SERVER_ERR_ALREADY_LISTENING;
+
+    cobra__server_close(server, COBRA_SERVER_OK);
+    return COBRA_SERVER_OK;
+}
+
 void cobra_server_set_data(cobra_server_t *server, void *data) {
     server->data = data;
 }
