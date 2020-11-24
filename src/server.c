@@ -8,6 +8,7 @@ cobra_server_t *cobra_server_create(int socket_write_queue_size) {
     uv_tcp_init(&server->loop, &server->tcp_handle);
     server->loop.data = server;
     server->tcp_handle.data = server;
+    server->socket_write_queue_size = socket_write_queue_size;
 
     server->is_listening = false;
     server->is_closing = false;
