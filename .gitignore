@@ -3,4 +3,10 @@
 .idea
 
 # Build
+CMakeFiles
 cmake-build-debug
+cmake-build-release
+CMakeCache.txt
+Makefile
+*.cmake
+*.cbp
