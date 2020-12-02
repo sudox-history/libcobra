@@ -7,7 +7,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tools.h"
+#include "misc/platform.h"
+#include "misc/utils.h"
 #endif
 
 typedef struct cobra_buffer_t cobra_buffer_t;

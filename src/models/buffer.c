@@ -60,8 +60,8 @@ void cobra_buffer_write_uint(cobra_buffer_t *buffer, uint64_t number, int length
         return;
 
     uint8_t *number_buffer = (uint8_t *) &number;
-    if (!cobra_tools_is_platform_big_endian())
-        cobra_tools_array_reverse(number_buffer, sizeof(uint64_t));
+    if (!cobra_platform_is_big_endian())
+        cobra_utils_flip_array(number_buffer, sizeof(uint64_t));
 
     // Important notice:
     // We need to copy only lower digits of the number
@@ -103,8 +103,8 @@ uint64_t cobra_buffer_read_uint(cobra_buffer_t *buffer, int length) {
     // We need to copy only lower digits of the number
     cobra_buffer_read(buffer, number_buffer + sizeof(uint64_t) - length, length);
 
-    if (!cobra_tools_is_platform_big_endian())
-        cobra_tools_array_reverse(number_buffer, sizeof(uint64_t));
+    if (!cobra_platform_is_big_endian())
+        cobra_utils_flip_array(number_buffer, sizeof(uint64_t));
 
     return *(uint64_t *) number_buffer;
 }

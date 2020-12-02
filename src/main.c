@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "internal/queue.h"
+#include "models/queue.h"
 
 int main() {
     cobra_queue_t *queue = malloc(sizeof(cobra_queue_t));

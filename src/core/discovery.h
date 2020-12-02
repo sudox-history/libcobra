@@ -3,11 +3,11 @@
 
 #ifdef COBRA_DISCOVERY_PRIVATE
 #include <uv.h>
-#include <stdbool.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "internal/buffer.h"
+#include "models/buffer.h"
 #endif
 
 #define COBRA_DISCOVERY_OK 0

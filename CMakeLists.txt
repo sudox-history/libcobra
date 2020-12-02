@@ -10,16 +10,16 @@ add_subdirectory(deps/libuv)
 # libcobra
 # Current library
 add_library(cobra_a
-        src/internal/buffer.c
-        src/internal/buffer.h
-        src/internal/tools.c
-        src/internal/tools.h
-        src/socket.c
-        include/cobra/socket.h
-        src/server.c
-        include/cobra/server.h
-        src/discovery.c
-        include/cobra/discovery.h src/internal/queue.c src/internal/queue.h)
+        src/models/buffer.c
+        src/models/buffer.h
+        src/misc/utils.c
+        src/misc/utils.h
+        src/core/socket.c
+        src/core/socket.h
+        src/core/server.c
+        src/core/server.h
+        src/core/discovery.c
+        src/core/discovery.h src/models/queue.c src/models/queue.h src/misc/platform.c src/misc/platform.h)
 
 target_include_directories(cobra_a
         PUBLIC include
@@ -32,11 +32,11 @@ target_link_libraries(cobra_a
 
 # Main
 # Used for fast testing during development
-#add_executable(main
-#        src/main.c)
-#
-#target_link_libraries(main
-#        cobra_a)
-#
-#target_link_options(main
-#        PUBLIC -fsanitize=address,undefined)
+add_executable(main
+        src/main.c)
+
+target_link_libraries(main
+        cobra_a)
+
+target_link_options(main
+        PUBLIC -fsanitize=address,undefined)
