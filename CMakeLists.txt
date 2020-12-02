@@ -10,20 +10,21 @@ add_subdirectory(deps/libuv)
 # libcobra
 # Current library
 add_library(cobra_a
-        src/buffer.c
-        src/buffer.h
-        src/tools.c
-        src/tools.h
+        src/internal/buffer.c
+        src/internal/buffer.h
+        src/internal/tools.c
+        src/internal/tools.h
         src/socket.c
-        src/socket.h
+        include/cobra/socket.h
         src/server.c
-        src/server.h
+        include/cobra/server.h
         src/discovery.c
-        src/discovery.h)
+        include/cobra/discovery.h src/internal/queue.c src/internal/queue.h)
 
 target_include_directories(cobra_a
         PUBLIC include
-        INTERFACE src)
+        INTERFACE src
+        PRIVATE src)
 
 target_link_libraries(cobra_a
         PUBLIC uv_a)

@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "buffer.h"
+#include "internal/buffer.h"
 #endif
 
 #define COBRA_SOCKET_PACKET_HEADER_LENGTH 2u

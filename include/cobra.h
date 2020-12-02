@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-#include "socket.h"
-#include "server.h"
-#include "discovery.h"
+#include "cobra/socket.h"
+#include "cobra/server.h"
+#include "cobra/discovery.h"
 
 #ifdef __cplusplus
 }

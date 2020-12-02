@@ -1,5 +1,5 @@
 #define COBRA_SOCKET_PRIVATE
-#include "socket.h"
+#include "cobra/socket.h"
 
 cobra_socket_t *cobra_socket_create(int write_queue_size) {
     cobra_socket_t *socket = malloc(sizeof(cobra_socket_t));

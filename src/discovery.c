@@ -1,5 +1,5 @@
 #define COBRA_DISCOVERY_PRIVATE
-#include "discovery.h"
+#include "cobra/discovery.h"
 
 cobra_discovery_t *cobra_discovery_create() {
     cobra_discovery_t *discovery = malloc(sizeof(cobra_discovery_t));
