@@ -1,12 +1,8 @@
 # OS & IDE
 .DS_Store
 .idea
+.vscode
 
 # Build
-CMakeFiles
-cmake-build-debug
-cmake-build-release
-CMakeCache.txt
-Makefile
-*.cmake
-*.cbp
+build
+cmake-build*

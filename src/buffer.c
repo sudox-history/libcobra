@@ -1,5 +1,5 @@
 #define COBRA_BUFFER_PRIVATE
-#include "buffer.h"
+#include "cobra/buffer.h"
 
 void cobra_buffer_init(cobra_buffer_t *buffer, uint64_t size) {
     buffer->size = size;
