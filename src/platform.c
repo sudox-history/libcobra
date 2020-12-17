@@ -1,5 +1,5 @@
 #define COBRA_PLATFORM_PRIVATE
-#include "platform.h"
+#include "cobra/platform.h"
 
 bool cobra_platform_is_big_endian() {
     int tmp = 1;

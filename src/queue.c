@@ -1,5 +1,5 @@
 #define COBRA_QUEUE_PRIVATE
-#include "queue.h"
+#include "cobra/queue.h"
 
 void cobra_queue_init(cobra_queue_t *queue, uint64_t size) {
     queue->size = size;

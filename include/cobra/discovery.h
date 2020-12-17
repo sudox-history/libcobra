@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include "models/buffer.h"
+#include "cobra/buffer.h"
 #endif
 
 #define COBRA_DISCOVERY_OK 0
