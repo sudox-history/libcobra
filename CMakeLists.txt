@@ -9,8 +9,7 @@ add_subdirectory(deps/libuv)
 
 # libcobra
 # Current library
-add_library(cobra_a
-        src/buffer.c
+set(COBRA_SOURCES src/buffer.c
         src/buffer.h
         src/tools.c
         src/tools.h
@@ -20,6 +19,9 @@ add_library(cobra_a
         src/server.h
         src/discovery.c
         src/discovery.h)
+
+add_library(cobra_a STATIC ${COBRA_SOURCES})
+add_library(cobra SHARED ${COBRA_SOURCES})
 
 target_include_directories(cobra_a
         PUBLIC include
