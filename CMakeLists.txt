@@ -30,7 +30,7 @@ target_include_directories(cobra_a
 target_link_libraries(cobra_a
         PUBLIC uv_a)
         
- target_link_library(cobra
+target_link_libraries(cobra
         PUBLIC uv_a)
 
 
