@@ -43,4 +43,3 @@ void cobra_buffer_read_void(cobra_buffer_t *buffer, uint64_t length) {
 uint8_t *cobra_buffer_read_pointer(cobra_buffer_t *buffer) {
     return buffer->read_pointer;
 }
-

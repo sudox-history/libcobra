@@ -34,5 +34,3 @@ bool cobra_buffer_equals(cobra_buffer_t *buffer,
 
     return memcmp(buffer->read_pointer, data, length) == 0;
 }
-
-

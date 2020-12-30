@@ -13,9 +13,9 @@ void cobra_buffer_deinit(cobra_buffer_t *buffer) {
 }
 
 uint64_t cobra_buffer_length(cobra_buffer_t *buffer) {
-    return (uint64_t) (buffer->write_pointer - buffer->read_pointer);
+    return (uint64_t)(buffer->write_pointer - buffer->read_pointer);
 }
 
 uint64_t cobra_buffer_capacity(cobra_buffer_t *buffer) {
-    return buffer->size - (uint64_t) (buffer->write_pointer - buffer->head_pointer);
+    return buffer->size - (uint64_t)(buffer->write_pointer - buffer->head_pointer);
 }
