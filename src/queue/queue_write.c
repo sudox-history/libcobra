@@ -1,8 +1,11 @@
 #define COBRA_QUEUE_PRIVATE
 #include "cobra/queue.h"
 
-void cobra_queue_push(cobra_queue_t *queue, void *data) {
-    if (cobra_queue_capacity(queue) == 0) {
+void cobra_queue_write(cobra_queue_t *queue, void *data) {
+    uv_mutex_lock(&queue->mutex);
+
+    if (cobra__queue_capacity(queue) == 0) {
+        uv_mutex_unlock(&queue->mutex);
         return;
     }
 
@@ -14,4 +17,6 @@ void cobra_queue_push(cobra_queue_t *queue, void *data) {
     if (queue->write_pointer - queue->head_pointer == queue->size) {
         queue->write_pointer = queue->head_pointer;
     }
+
+    uv_mutex_unlock(&queue->mutex);
 }

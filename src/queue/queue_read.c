@@ -1,8 +1,11 @@
 #define COBRA_QUEUE_PRIVATE
 #include "cobra/queue.h"
 
-void *cobra_queue_shift(cobra_queue_t *queue) {
-    if (cobra_queue_length(queue) == 0) {
+void *cobra_queue_read(cobra_queue_t *queue) {
+    uv_mutex_lock(&queue->mutex);
+
+    if (cobra__queue_length(queue) == 0) {
+        uv_mutex_unlock(&queue->mutex);
         return NULL;
     }
 
@@ -16,9 +19,10 @@ void *cobra_queue_shift(cobra_queue_t *queue) {
     }
 
     // One more check for length
-    if (cobra_queue_length(queue) == 0) {
-        cobra_queue_clear(queue);
+    if (cobra__queue_length(queue) == 0) {
+        cobra__queue_clear(queue);
     }
 
+    uv_mutex_unlock(&queue->mutex);
     return data;
 }
