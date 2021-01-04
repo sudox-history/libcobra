@@ -1,23 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cobra.h"
+#include "cobra/queue.h"
 
-int *main_ptr = NULL;
-int *func_ptr = NULL;
-void func() {
-    int a;
-    func_ptr = &a;
-}
-int main()
-{
-    int a;
-    main_ptr = &a;
-    func();
-    (main_ptr > func_ptr) ? printf("DOWN\n") : printf("UP\n");
+int main() {
+    cobra_queue_t queue;
+    cobra_queue_init(&queue, 10);
 
-    char *ab = malloc(20);
-    printf("%lu\n", main_ptr);
-    printf("%lu\n", func_ptr);
-    printf("%lu\n", ab);
-    return 0;
+    cobra_queue_write(&queue, (void *) 1);
+    cobra_queue_write(&queue, (void *) 2);
+    cobra_queue_write(&queue, (void *) 3);
+
+    printf("%lu\n", (uint64_t) cobra_queue_read(&queue));
+    cobra_queue_write(&queue, (void *) 4);
+
+    printf("%lu\n", (uint64_t) cobra_queue_read(&queue));
+    printf("%lu\n", (uint64_t) cobra_queue_read(&queue));
+    printf("%lu\n", (uint64_t) cobra_queue_read(&queue));
+    cobra_queue_deinit(&queue);
 }

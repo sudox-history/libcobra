@@ -2,10 +2,10 @@
 #include "cobra/queue.h"
 
 void *cobra_queue_read(cobra_queue_t *queue) {
-    uv_mutex_lock(&queue->mutex);
+    uv_mutex_lock(&queue->mutex_handle);
 
     if (cobra__queue_length(queue) == 0) {
-        uv_mutex_unlock(&queue->mutex);
+        uv_mutex_unlock(&queue->mutex_handle);
         return NULL;
     }
 
@@ -23,6 +23,6 @@ void *cobra_queue_read(cobra_queue_t *queue) {
         cobra__queue_clear(queue);
     }
 
-    uv_mutex_unlock(&queue->mutex);
+    uv_mutex_unlock(&queue->mutex_handle);
     return data;
 }

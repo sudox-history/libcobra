@@ -3,14 +3,14 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <uv.h>
 #ifdef COBRA_QUEUE_PRIVATE
 #include <stddef.h>
 #include <stdlib.h>
-#include <uv.h>
 #endif
 
 typedef struct cobra_queue_t {
-    uv_mutex_t mutex;
+    uv_mutex_t mutex_handle;
     uint64_t size;
     uint64_t length;
     void **head_pointer;

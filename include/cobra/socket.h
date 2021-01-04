@@ -21,12 +21,20 @@
     -COBRA_SOCKET_PACKET_HEADER_LENGTH
 
 #define COBRA_SOCKET_OK 0
-#define COBRA_SOCKET_ERR_ALREADY_CONNECTED 1
+#define COBRA_SOCKET_ERR_NOT_CLOSED 1
 #define COBRA_SOCKET_ERR_NOT_CONNECTED 2
 #define COBRA_SOCKET_ERR_RESOLVING 3
 #define COBRA_SOCKET_ERR_CONNECTING 4
 #define COBRA_SOCKET_ERR_QUEUE_FULL 5
 #define COBRA_SOCKET_ERR_QUEUE_OVERFLOW 6
+
+#ifdef COBRA_SOCKET_PRIVATE
+#define COBRA_SOCKET_STATUS_CLOSED 1
+#define COBRA_SOCKET_STATUS_RESOLVING 2
+#define COBRA_SOCKET_STATUS_CONNECTING 3
+#define COBRA_SOCKET_STATUS_CONNECTED 4
+#define COBRA_SOCKET_STATUS_CLOSING 5
+#endif
 
 typedef struct cobra_socket_t cobra_socket_t;
 
@@ -47,30 +55,26 @@ typedef void (*cobra_socket_drain_cb)
 
 #ifdef COBRA_SOCKET_PRIVATE
 struct cobra_socket_t {
+    uv_mutex_t mutex_handle;
+
     uv_loop_t loop;
     uv_tcp_t tcp_handle;
+    uv_timer_t timer_handle;
+    uv_async_t async_handle;
 
-    bool is_connected;
-    bool is_alive;
-    bool is_closing;
-    int close_error;
-
-    cobra_buffer_t read_buffer;
-    uint64_t read_packet_body_length;
-
-    int write_queue_size;
-    int write_queue_length;
-
-    cobra_socket_connect_cb on_connect;
-    cobra_socket_close_cb on_close;
-    cobra_socket_alloc_cb on_alloc;
-    cobra_socket_read_cb on_read;
-    cobra_socket_drain_cb on_drain;
-
-    void *data;
+    int connection_status;
+    bool connection_alive;
 };
 #endif
 
+/**
+ * Connection
+ */
 int cobra_socket_connect(cobra_socket_t *sock, char *host, char *port);
+#ifdef COBRA_SOCKET_PRIVATE
+void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
+                                    int error,
+                                    struct addrinfo *addrinfo);
+#endif
 
 #endif//COBRA_SOCKET_H
