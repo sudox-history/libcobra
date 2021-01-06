@@ -10,9 +10,9 @@ add_subdirectory(deps/libuv)
 # libcobra
 # Current library
 add_library(cobra_a
-        src/buffer/buffer_write.c 
-        src/buffer/buffer_read.c 
-        src/buffer/buffer_memory.c 
+        src/buffer/buffer_write.c
+        src/buffer/buffer_read.c
+        src/buffer/buffer_memory.c
         src/buffer/buffer.c
         src/queue/queue_memory.c
         src/queue/queue_write.c
@@ -27,8 +27,7 @@ add_library(cobra_a
         src/socket/socket.c
         src/server.c
         src/discovery.c
-        src/platform.c 
-)
+        src/platform.c)
 
 target_include_directories(cobra_a
         PUBLIC include)
