@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #endif
 
-typedef struct cobra_queue_t {
+typedef struct {
     uv_mutex_t mutex_handle;
     uint64_t size;
     uint64_t length;

@@ -11,7 +11,7 @@
 #include "utils.h"
 #endif
 
-typedef struct cobra_buffer_t {
+typedef struct {
     uint64_t size;
     uint8_t *head_pointer;
     uint8_t *read_pointer;

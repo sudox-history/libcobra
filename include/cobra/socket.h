@@ -5,6 +5,7 @@
 #include <stdint.h>
 #ifdef COBRA_SOCKET_PRIVATE
 #include "cobra/buffer.h"
+#include "cobra/queue.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,6 +69,12 @@ struct cobra_socket_t {
     cobra_buffer_t read_buffer;
     uint64_t read_packet_body_length;
 
+    int write_queue_size;
+    int write_queue_length;
+
+    cobra_queue_t send_queue;
+    cobra_queue_t close_queue;
+
     cobra_socket_connect_cb connect_callback;
     cobra_socket_close_cb close_callback;
     cobra_socket_alloc_cb alloc_callback;
@@ -94,7 +101,12 @@ void cobra__socket_connect_callback(uv_connect_t *connect_request,
  */
 int cobra_socket_close(cobra_socket_t *sock);
 #ifdef COBRA_SOCKET_PRIVATE
+typedef struct {
+    cobra_socket_t *sock;
+} cobra__socket_close_request;
 
+void cobra__socket_close(cobra_socket_t *sock, int error);
+void cobra__socket_close_callback(uv_handle_t *tcp_handle);
 #endif
 
 /**

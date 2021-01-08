@@ -68,7 +68,9 @@ void cobra__socket_connect_callback(uv_connect_t *connect_request,
     sock->connection_status = COBRA_SOCKET_STATUS_CONNECTED;
 
     if (sock->connect_callback) {
+        uv_mutex_unlock(&sock->mutex_handle);
         sock->connect_callback(sock);
+        uv_mutex_lock(&sock->mutex_handle);
     }
 
     uv_read_start((uv_stream_t *) &sock->tcp_handle,
