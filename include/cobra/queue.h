@@ -1,22 +1,24 @@
 #ifndef COBRA_QUEUE_H
 #define COBRA_QUEUE_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <uv.h>
 #ifdef COBRA_QUEUE_PRIVATE
 #include <stddef.h>
 #include <stdlib.h>
 #endif
 
-typedef struct {
+typedef struct cobra_queue_t cobra_queue_t;
+
+struct cobra_queue_t {
     uv_mutex_t mutex_handle;
     uint64_t size;
     uint64_t length;
     void **head_pointer;
     void **read_pointer;
     void **write_pointer;
-} cobra_queue_t;
+};
 
 /**
  * Base methods
@@ -51,4 +53,4 @@ void *cobra_queue_read(cobra_queue_t *queue);
 // TODO: Implement cobra_queue_read_start
 
 
-#endif //COBRA_QUEUE_H
+#endif//COBRA_QUEUE_H

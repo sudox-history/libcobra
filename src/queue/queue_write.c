@@ -14,9 +14,8 @@ void cobra_queue_write(cobra_queue_t *queue, void *data) {
 
     queue->length++;
     queue->write_pointer++;
-    if (queue->write_pointer - queue->head_pointer == queue->size) {
+    if (queue->write_pointer - queue->head_pointer == queue->size)
         queue->write_pointer = queue->head_pointer;
-    }
 
     uv_mutex_unlock(&queue->mutex_handle);
 }

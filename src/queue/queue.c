@@ -2,7 +2,7 @@
 #include "cobra/queue.h"
 
 void cobra_queue_init(cobra_queue_t *queue, uint64_t size) {
-    uv_mutex_init(&queue->mutex);
+    uv_mutex_init(&queue->mutex_handle);
     queue->size = size;
     queue->length = 0;
     queue->head_pointer = malloc(size * sizeof(void *));
@@ -15,17 +15,17 @@ void cobra_queue_deinit(cobra_queue_t *queue) {
 }
 
 uint64_t cobra_queue_length(cobra_queue_t *queue) {
-    uv_mutex_lock(&queue->mutex);
+    uv_mutex_lock(&queue->mutex_handle);
     uint64_t length = cobra__queue_length(queue);
-    uv_mutex_unlock(&queue->mutex);
+    uv_mutex_unlock(&queue->mutex_handle);
 
     return length;
 }
 
 uint64_t cobra_queue_capacity(cobra_queue_t *queue) {
-    uv_mutex_lock(&queue->mutex);
+    uv_mutex_lock(&queue->mutex_handle);
     uint64_t capacity = cobra__queue_capacity(queue);
-    uv_mutex_unlock(&queue->mutex);
+    uv_mutex_unlock(&queue->mutex_handle);
 
     return capacity;
 }

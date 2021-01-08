@@ -14,14 +14,12 @@ void *cobra_queue_read(cobra_queue_t *queue) {
 
     queue->length--;
     queue->read_pointer++;
-    if (queue->read_pointer - queue->head_pointer == queue->size) {
+    if (queue->read_pointer - queue->head_pointer == queue->size)
         queue->read_pointer = queue->head_pointer;
-    }
 
     // One more check for length
-    if (cobra__queue_length(queue) == 0) {
+    if (cobra__queue_length(queue) == 0)
         cobra__queue_clear(queue);
-    }
 
     uv_mutex_unlock(&queue->mutex_handle);
     return data;
