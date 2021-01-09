@@ -10,21 +10,24 @@ add_subdirectory(deps/libuv)
 # libcobra
 # Current library
 add_library(cobra_a
+        src/async/async.c
+        src/async/async_send.c
+        src/async/async_callbacks.c
+        src/buffer/buffer.c
         src/buffer/buffer_write.c
         src/buffer/buffer_read.c
         src/buffer/buffer_memory.c
-        src/buffer/buffer.c
+        src/queue/queue.c
         src/queue/queue_memory.c
         src/queue/queue_write.c
         src/queue/queue_read.c
-        src/queue/queue.c
         src/utils.c
+        src/socket/socket.c
         src/socket/socket_close.c
         src/socket/socket_connect.c
         src/socket/socket_ping.c
         src/socket/socket_read.c
         src/socket/socket_write.c
-        src/socket/socket.c
         src/server.c
         src/discovery.c
         src/platform.c)
