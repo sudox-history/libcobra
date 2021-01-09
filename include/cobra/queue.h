@@ -13,11 +13,11 @@ typedef struct cobra_queue_t cobra_queue_t;
 
 struct cobra_queue_t {
     uv_mutex_t mutex_handle;
-    uint64_t size;
-    uint64_t length;
-    void **head_pointer;
-    void **read_pointer;
-    void **write_pointer;
+    uint64_t   size;
+    uint64_t   length;
+    void       **head_pointer;
+    void       **read_pointer;
+    void       **write_pointer;
 };
 
 /**

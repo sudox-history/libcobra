@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #ifdef COBRA_SOCKET_PRIVATE
+#include "cobra/async.h"
 #include "cobra/buffer.h"
-#include "cobra/queue.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,47 +39,42 @@
 
 typedef struct cobra_socket_t cobra_socket_t;
 
-typedef void (*cobra_socket_connect_cb)(cobra_socket_t *socket);
+typedef void (*cobra_socket_connect_cb)
+                     (cobra_socket_t *socket);
 
-typedef void (*cobra_socket_close_cb)(cobra_socket_t *socket,
-                                      int error);
+typedef void (*cobra_socket_close_cb)
+                     (cobra_socket_t *socket, int error);
 
-typedef void (*cobra_socket_alloc_cb)(cobra_socket_t *socket,
-                                      uint8_t **data,
-                                      uint64_t length);
+typedef void (*cobra_socket_alloc_cb)
+                     (cobra_socket_t *socket, uint8_t **data, uint64_t length);
 
-typedef void (*cobra_socket_read_cb)(cobra_socket_t *socket,
-                                     uint8_t *data,
-                                     uint64_t length);
+typedef void (*cobra_socket_read_cb)
+                     (cobra_socket_t *socket, uint8_t *data, uint64_t length);
 
-typedef void (*cobra_socket_drain_cb)(cobra_socket_t *socket);
+typedef void (*cobra_socket_drain_cb)
+                     (cobra_socket_t *socket);
 
 #ifdef COBRA_SOCKET_PRIVATE
 struct cobra_socket_t {
-    uv_mutex_t mutex_handle;
-
-    uv_loop_t loop;
-    uv_tcp_t tcp_handle;
+    uv_loop_t  loop;
+    uv_tcp_t   tcp_handle;
     uv_timer_t timer_handle;
-    uv_async_t async_handle;
 
-    int connection_status;
-    bool connection_alive;
+    uv_mutex_t    mutex_handle;
+    cobra_async_t send_async;
+    cobra_async_t close_async;
+
+    int status;
+    bool alive;
 
     cobra_buffer_t read_buffer;
-    uint64_t read_packet_body_length;
-
-    int write_queue_size;
-    int write_queue_length;
-
-    cobra_queue_t send_queue;
-    cobra_queue_t close_queue;
+    uint64_t       read_packet_body_length;
 
     cobra_socket_connect_cb connect_callback;
-    cobra_socket_close_cb close_callback;
-    cobra_socket_alloc_cb alloc_callback;
-    cobra_socket_read_cb read_callback;
-    cobra_socket_drain_cb drain_callback;
+    cobra_socket_close_cb   close_callback;
+    cobra_socket_alloc_cb   alloc_callback;
+    cobra_socket_read_cb    read_callback;
+    cobra_socket_drain_cb   drain_callback;
 };
 #endif
 
@@ -88,38 +83,14 @@ struct cobra_socket_t {
  */
 int cobra_socket_connect(cobra_socket_t *sock, char *host, char *port);
 #ifdef COBRA_SOCKET_PRIVATE
+void cobra__socket_connect(void *sock);
+
 void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
                                     int error,
                                     struct addrinfo *addrinfo);
 
 void cobra__socket_connect_callback(uv_connect_t *connect_request,
                                     int error);
-#endif
-
-/**
- * Closing
- */
-int cobra_socket_close(cobra_socket_t *sock);
-#ifdef COBRA_SOCKET_PRIVATE
-typedef struct {
-    cobra_socket_t *sock;
-} cobra__socket_close_request;
-
-void cobra__socket_close(cobra_socket_t *sock, int error);
-void cobra__socket_close_callback(uv_handle_t *tcp_handle);
-#endif
-
-/**
- * Reading
- */
-#ifdef COBRA_SOCKET_PRIVATE
-void cobra__socket_alloc_callback(uv_handle_t *tcp_handle,
-                                  size_t length,
-                                  uv_buf_t *read_buffer);
-
-void cobra__socket_read_callback(uv_stream_t *tcp_handle,
-                                 ssize_t length,
-                                 const uv_buf_t *read_buffer);
 #endif
 
 #endif//COBRA_SOCKET_H

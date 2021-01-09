@@ -16,10 +16,10 @@ typedef struct cobra_buffer_t cobra_buffer_t;
 
 struct cobra_buffer_t {
     uv_mutex_t mutex_handle;
-    uint64_t size;
-    uint8_t *head_pointer;
-    uint8_t *read_pointer;
-    uint8_t *write_pointer;
+    uint64_t   size;
+    uint8_t    *head_pointer;
+    uint8_t    *read_pointer;
+    uint8_t    *write_pointer;
 };
 
 /**
