@@ -31,12 +31,6 @@ uint64_t cobra_buffer_length(cobra_buffer_t *buffer);
 uint64_t cobra_buffer_capacity(cobra_buffer_t *buffer);
 
 /**
- * Sync methods
- */
-void cobra_buffer_lock(cobra_buffer_t *buffer);
-void cobra_buffer_unlock(cobra_buffer_t *buffer);
-
-/**
  * Memory methods
  */
 void cobra_buffer_clear(cobra_buffer_t *buffer);

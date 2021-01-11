@@ -29,12 +29,6 @@ uint64_t cobra_queue_length(cobra_queue_t *queue);
 uint64_t cobra_queue_capacity(cobra_queue_t *queue);
 
 /**
- * Sync methods
- */
-void cobra_queue_lock(cobra_queue_t *queue);
-void cobra_queue_unlock(cobra_queue_t *queue);
-
-/**
  * Memory methods
  */
 void cobra_queue_clear(cobra_queue_t *queue);

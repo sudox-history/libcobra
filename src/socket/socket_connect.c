@@ -12,12 +12,11 @@ int cobra_socket_connect(cobra_socket_t *sock, char *host, char *port) {
     sock->state = COBRA_SOCKET_STATE_INITIALIZING;
     sock->alive = COBRA_SOCKET_ALIVE_OK;
 
-    // Necessary to re-init handles each time you want to open connection
-    // It's safe to init them here because connect() func can be called only once
+    // Necessary to re-init handles each time you want to open connection.
+    // Initialization MUST be under mutex protection because after unlock()
+    // user can call immediately cobra_socket_close() which deals with loop.
     uv_tcp_init(&sock->loop, &sock->tcp_handle);
     uv_timer_init(&sock->loop, &sock->timer_handle);
-
-    // Async binding also is not thread safe
     cobra_async_bind(&sock->write_async, &sock->loop);
     cobra_async_bind(&sock->close_async, &sock->loop);
 
@@ -74,7 +73,9 @@ void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
                                     int error,
                                     struct addrinfo *addrinfo) {
     cobra_socket_t *sock = uv_req_get_data((uv_req_t *) resolve_request);
+
     free(resolve_request);
+    sock->resolve_request = NULL;
 
     // If user called cobra_socket_socket() during connecting
     if (error == UV_ECANCELED)
@@ -104,7 +105,9 @@ void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
 void cobra__socket_connect_callback(uv_connect_t *connect_request,
                                     int error) {
     cobra_socket_t *sock = uv_req_get_data((uv_req_t *) connect_request);
+
     free(connect_request);
+    sock->connect_request = NULL;
 
     // If user called cobra_socket_socket() during connecting
     if (error == UV_ECANCELED)
@@ -116,9 +119,13 @@ void cobra__socket_connect_callback(uv_connect_t *connect_request,
     }
 
     uv_mutex_lock(&sock->mutex_handle);
+    cobra_socket_connect_cb connect_callback = sock->connect_callback;
     sock->state = COBRA_SOCKET_STATE_CONNECTED;
     uv_mutex_unlock(&sock->mutex_handle);
 
-    // TODO: Start reading
-    // TODO: Start ping
+    cobra__socket_start_read(sock);
+    cobra__socket_start_ping(sock);
+
+    if (connect_callback != NULL)
+        connect_callback(sock);
 }

@@ -52,7 +52,7 @@ typedef void (*cobra_socket_connect_cb)
         (cobra_socket_t *socket);
 
 typedef void (*cobra_socket_close_cb)
-        (cobra_socket_t *socket, int error);
+        (cobra_socket_t *socket, cobra_socket_err_t error);
 
 typedef void (*cobra_socket_alloc_cb)
         (cobra_socket_t *socket, uint8_t **data, uint64_t length);
@@ -64,6 +64,7 @@ typedef void (*cobra_socket_drain_cb)
         (cobra_socket_t *socket);
 
 #ifdef COBRA_SOCKET_PRIVATE
+#define COBRA_SOCKET_TOTAL_HANDLERS_COUNT 4
 struct cobra_socket_t {
     uv_loop_t loop;
     uv_tcp_t tcp_handle;
@@ -79,6 +80,9 @@ struct cobra_socket_t {
 
     cobra__socket_state_t state;
     cobra__socket_alive_t alive;
+
+    cobra_socket_err_t close_error;
+    int closed_handlers_count;
 
     cobra_buffer_t read_buffer;
     uint64_t read_frame_body_length;
@@ -96,7 +100,6 @@ struct cobra_socket_t {
  */
 cobra_socket_t *cobra_socket_create(int write_queue_size);
 void cobra_socket_destroy(cobra_socket_t *sock);
-
 
 /**
  * Connection method
@@ -124,22 +127,26 @@ void cobra__socket_connect_callback(uv_connect_t *connect_request,
  */
 int cobra_socket_close(cobra_socket_t *sock);
 #ifdef COBRA_SOCKET_PRIVATE
-int cobra__socket_close(cobra_socket_t *sock, int error);
+int cobra__socket_close(cobra_socket_t *sock, cobra_socket_err_t error);
 
 typedef struct {
     cobra_socket_t *sock;
-    int error;
+    cobra_socket_err_t error;
 } cobra__socket_close_ctx_t;
 
-void cobra__socket_close_async_main_callback(cobra_async_t *async, void *close_request);
-void cobra__socket_close_async_close_callback(cobra_async_t *async);
+void cobra__socket_close_async_send_callback(cobra_async_t *async, void *close_request);
 
-void cobra__socket_close_callback(uv_handle_t *tcp_handle);
+void cobra__socket_close_callback(uv_handle_t *handle);
+void cobra__socket_close_async_close_callback(cobra_async_t *async);
 #endif
 
 /**
  * Reading methods
  */
+#if defined(COBRA_SOCKET_SERVER_INTERNALS) || defined(COBRA_SOCKET_PRIVATE)
+void cobra__socket_start_read(cobra_socket_t *sock);
+#endif
+
 #ifdef COBRA_SOCKET_PRIVATE
 void cobra__socket_alloc_callback(uv_handle_t *tcp_handle,
                                   size_t length,
@@ -148,6 +155,13 @@ void cobra__socket_alloc_callback(uv_handle_t *tcp_handle,
 void cobra__socket_read_callback(uv_stream_t *tcp_handle,
                                  ssize_t length,
                                  const uv_buf_t *buffer);
+#endif
+
+/**
+ * Ping methods
+ */
+#if defined(COBRA_SOCKET_SERVER_INTERNALS) || defined(COBRA_SOCKET_PRIVATE)
+void cobra__socket_start_ping(cobra_socket_t *sock);
 #endif
 
 #endif//COBRA_SOCKET_H
