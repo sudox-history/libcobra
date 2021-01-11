@@ -14,25 +14,9 @@ void cobra_buffer_deinit(cobra_buffer_t *buffer) {
 }
 
 uint64_t cobra_buffer_length(cobra_buffer_t *buffer) {
-    uv_mutex_lock(&buffer->mutex_handle);
-    uint64_t length = cobra__buffer_length(buffer);
-    uv_mutex_unlock(&buffer->mutex_handle);
-
-    return length;
+    return (uint64_t) (buffer->write_pointer - buffer->read_pointer);
 }
 
 uint64_t cobra_buffer_capacity(cobra_buffer_t *buffer) {
-    uv_mutex_lock(&buffer->mutex_handle);
-    uint64_t capacity = cobra__buffer_capacity(buffer);
-    uv_mutex_unlock(&buffer->mutex_handle);
-
-    return capacity;
-}
-
-uint64_t cobra__buffer_length(cobra_buffer_t *buffer) {
-    return (uint64_t)(buffer->write_pointer - buffer->read_pointer);
-}
-
-uint64_t cobra__buffer_capacity(cobra_buffer_t *buffer) {
-    return buffer->size - (uint64_t)(buffer->write_pointer - buffer->head_pointer);
+    return buffer->size - (uint64_t) (buffer->write_pointer - buffer->head_pointer);
 }

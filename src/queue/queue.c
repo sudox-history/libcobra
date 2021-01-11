@@ -15,25 +15,9 @@ void cobra_queue_deinit(cobra_queue_t *queue) {
 }
 
 uint64_t cobra_queue_length(cobra_queue_t *queue) {
-    uv_mutex_lock(&queue->mutex_handle);
-    uint64_t length = cobra__queue_length(queue);
-    uv_mutex_unlock(&queue->mutex_handle);
-
-    return length;
-}
-
-uint64_t cobra_queue_capacity(cobra_queue_t *queue) {
-    uv_mutex_lock(&queue->mutex_handle);
-    uint64_t capacity = cobra__queue_capacity(queue);
-    uv_mutex_unlock(&queue->mutex_handle);
-
-    return capacity;
-}
-
-uint64_t cobra__queue_length(cobra_queue_t *queue) {
     return queue->length;
 }
 
-uint64_t cobra__queue_capacity(cobra_queue_t *queue) {
+uint64_t cobra_queue_capacity(cobra_queue_t *queue) {
     return queue->size - queue->length;
 }

@@ -1,38 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "cobra/async.h"
 
-void main_callback(cobra_async_t *async, void *data) {
-    int value = (int) data;
-    printf("%d\n", value);
-}
-
-void drain_callback(cobra_async_t *async) {
-    printf("DRAIN\n");
-}
-
-void another_thread(void *data) {
-    cobra_async_t *async = data;
-
-    cobra_async_send(async, (void *) 10);
-    cobra_async_send(async, (void *) 11);
-    int res = cobra_async_send(async, (void *) 12);
-
-    printf("Res: %d\n", res);
+void on_connect(uv_connect_t* req, int status) {
+    printf("From connect: %s\n", uv_strerror(status));
+    fflush(stdout);
 }
 
 int main() {
     uv_loop_t loop;
     uv_loop_init(&loop);
 
-    cobra_async_t async;
-    cobra_async_init(&async, &loop, 3);
-    cobra_async_set_callbacks(&async, main_callback, drain_callback);
+    uv_tcp_t tcp_handle;
+    uv_tcp_init(&loop, &tcp_handle);
 
-    uv_thread_t thread;
-    uv_thread_create(&thread, another_thread, &async);
+    struct sockaddr addr;
+    uv_ip4_addr("192.168.1.4", 5000, &addr);
+
+    uv_connect_t connect_request;
+    int r = uv_tcp_connect(&connect_request, &tcp_handle, &addr, on_connect);
+    printf("Result: %s\n", uv_strerror(r));
+    fflush(stdout);
 
     uv_run(&loop, UV_RUN_DEFAULT);
+
     uv_loop_close(&loop);
     printf("Hello world\n");
 }

@@ -12,18 +12,21 @@ add_subdirectory(deps/libuv)
 add_library(cobra_a
         src/async/async.c
         src/async/async_send.c
-        src/async/async_callbacks.c
+        src/async/async_bind.c
+        src/async/async_get_set.c
         src/buffer/buffer.c
+        src/buffer/buffer_sync.c
         src/buffer/buffer_write.c
         src/buffer/buffer_read.c
         src/buffer/buffer_memory.c
         src/queue/queue.c
         src/queue/queue_memory.c
-        src/queue/queue_write.c
+        src/queue/queue_sync.c
         src/queue/queue_read.c
+        src/queue/queue_write.c
         src/utils.c
         #src/socket/socket.c
-        #src/socket/socket_close.c
+        src/socket/socket_close.c
         src/socket/socket_connect.c
         #src/socket/socket_ping.c
         #src/socket/socket_read.c
