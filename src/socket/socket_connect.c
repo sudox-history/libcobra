@@ -1,7 +1,7 @@
 #define COBRA_SOCKET_PRIVATE
 #include "cobra/socket.h"
 
-int cobra_socket_connect(cobra_socket_t *sock, char *host, char *port) {
+cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock, char *host, char *port) {
     uv_mutex_lock(&sock->mutex_handle);
 
     if (sock->state != COBRA_SOCKET_STATE_CLOSED) {
@@ -17,6 +17,7 @@ int cobra_socket_connect(cobra_socket_t *sock, char *host, char *port) {
     // user can call immediately cobra_socket_close() which deals with loop.
     uv_tcp_init(&sock->loop, &sock->tcp_handle);
     uv_timer_init(&sock->loop, &sock->timer_handle);
+    uv_timer_init(&sock->loop, &sock->check_timer_handle);
     cobra_async_bind(&sock->write_async, &sock->loop);
     cobra_async_bind(&sock->close_async, &sock->loop);
 
@@ -30,13 +31,13 @@ int cobra_socket_connect(cobra_socket_t *sock, char *host, char *port) {
     connect_ctx->port = port;
 
     uv_thread_create(&sock->thread_handle,
-                     cobra__socket_connect,
+                     cobra__socket_connect_thread,
                      connect_ctx);
 
     return COBRA_SOCKET_OK;
 }
 
-void cobra__socket_connect(void *data) {
+void cobra__socket_connect_thread(void *data) {
     cobra__socket_connect_ctx_t *connect_ctx = data;
 
     cobra_socket_t *sock = connect_ctx->sock;

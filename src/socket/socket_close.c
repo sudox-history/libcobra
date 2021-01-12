@@ -1,11 +1,11 @@
 #define COBRA_SOCKET_PRIVATE
 #include "cobra/socket.h"
 
-int cobra_socket_close(cobra_socket_t *sock) {
+cobra_socket_err_t cobra_socket_close(cobra_socket_t *sock) {
     return cobra__socket_close(sock, COBRA_SOCKET_OK);
 }
 
-int cobra__socket_close(cobra_socket_t *sock, cobra_socket_err_t error) {
+cobra_socket_err_t cobra__socket_close(cobra_socket_t *sock, cobra_socket_err_t error) {
     uv_mutex_lock(&sock->mutex_handle);
 
     if (sock->state == COBRA_SOCKET_STATE_CLOSED) {
@@ -54,6 +54,7 @@ void cobra__socket_close_async_send_callback(cobra_async_t *async, void *data) {
     // It's safe to close them here because only one callback can be executed at time
     uv_close((uv_handle_t *) &sock->tcp_handle, cobra__socket_close_callback);
     uv_close((uv_handle_t *) &sock->timer_handle, cobra__socket_close_callback);
+    uv_close((uv_handle_t *) &sock->check_timer_handle, cobra__socket_close_callback);
     cobra_async_close(&sock->write_async);
     cobra_async_close(&sock->close_async);
 
@@ -61,8 +62,9 @@ void cobra__socket_close_async_send_callback(cobra_async_t *async, void *data) {
     sock->closed_handlers_count = 0;
 }
 
-static void cobra__socket_close_common_callback(cobra_socket_t *sock) {
+static void cobra__socket_common_close_callback(cobra_socket_t *sock) {
     sock->closed_handlers_count++;
+
     if (sock->closed_handlers_count == COBRA_SOCKET_TOTAL_HANDLERS_COUNT) {
         uv_mutex_lock(&sock->mutex_handle);
         cobra_socket_close_cb close_callback = sock->close_callback;
@@ -74,9 +76,9 @@ static void cobra__socket_close_common_callback(cobra_socket_t *sock) {
 }
 
 void cobra__socket_close_callback(uv_handle_t *handle) {
-    cobra__socket_close_common_callback(uv_handle_get_data(handle));
+    cobra__socket_common_close_callback(uv_handle_get_data(handle));
 }
 
-void cobra__socket_close_async_close_callback(cobra_async_t *async) {
-    cobra__socket_close_common_callback(cobra_async_get_data(async));
+void cobra__socket_async_close_callback(cobra_async_t *async) {
+    cobra__socket_common_close_callback(cobra_async_get_data(async));
 }

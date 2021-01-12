@@ -6,7 +6,7 @@ cobra_async_err_t cobra_async_send(cobra_async_t *async, void *data) {
 
     if (cobra_queue_capacity(&async->data_queue) == 0) {
         uv_mutex_unlock(&async->mutex_handle);
-        return COBRA_ASYNC_QUEUE_OVERFLOW;
+        return COBRA_ASYNC_ERR_QUEUE_OVERFLOW;
     }
 
     cobra_queue_write(&async->data_queue, data);
@@ -15,7 +15,7 @@ cobra_async_err_t cobra_async_send(cobra_async_t *async, void *data) {
     bool full = cobra_queue_capacity(&async->data_queue) == 0;
     uv_mutex_unlock(&async->mutex_handle);
 
-    return full ? COBRA_ASYNC_QUEUE_FULL : COBRA_ASYNC_OK;
+    return full ? COBRA_ASYNC_ERR_QUEUE_FULL : COBRA_ASYNC_OK;
 }
 
 void cobra__async_send_callback(uv_async_t *async_handle) {

@@ -2,36 +2,46 @@
 #include "cobra/socket.h"
 
 cobra_socket_t *cobra_socket_create(int write_queue_size) {
-    cobra_socket_t *socket = malloc(sizeof(cobra_socket_t));
+    cobra_socket_t *sock = malloc(sizeof(cobra_socket_t));
 
-    uv_loop_init(&socket->loop);
-    uv_tcp_init(&socket->loop, &socket->tcp_handle);
+    uv_loop_init(&sock->loop);
+    uv_mutex_init(&sock->mutex_handle);
 
-    socket->is_connected = false;
-    socket->is_alive = false;
-    socket->is_closing = false;
-    socket->close_error = COBRA_SOCKET_OK;
+    cobra_async_init(&sock->write_async, write_queue_size);
+    cobra_async_init(&sock->close_async, 1);
 
-    socket->write_queue_size = write_queue_size;
-    socket->write_queue_length = 0;
+    uv_handle_set_data((uv_handle_t *) &sock->tcp_handle, sock);
+    uv_handle_set_data((uv_handle_t *) &sock->timer_handle, sock);
+    uv_handle_set_data((uv_handle_t *) &sock->check_timer_handle, sock);
+    cobra_async_set_data(&sock->write_async, sock);
+    cobra_async_set_data(&sock->close_async, sock);
 
-    cobra_buffer_init(&socket->read_buffer, COBRA_SOCKET_PACKET_MAX_LENGTH);
-    socket->read_packet_body_length = 0;
+    cobra_async_set_callbacks(&sock->write_async,
+                              cobra__socket_write_async_send_callback,
+                              cobra__socket_write_async_drain_callback,
+                              cobra__socket_async_close_callback);
 
-    socket->on_connect = NULL;
-    socket->on_close = NULL;
-    socket->on_alloc = NULL;
-    socket->on_read = NULL;
-    socket->on_drain = NULL;
+    cobra_async_set_callbacks(&sock->close_async,
+                              cobra__socket_close_async_send_callback,
+                              NULL,
+                              cobra__socket_async_close_callback);
 
-    socket->data = NULL;
-    return socket;
+    cobra_buffer_init(&sock->read_buffer, COBRA_SOCKET_FRAME_MAX_LENGTH);
+    return sock;
 }
 
-void cobra_socket_destroy(cobra_socket_t *socket) {
-    if (socket->is_connected)
-        cobra_socket_close(socket);
+cobra_socket_err_t cobra_socket_destroy(cobra_socket_t *sock) {
+    uv_mutex_lock(&sock->mutex_handle);
 
-    cobra_buffer_deinit(&socket->read_buffer);
+    if (sock->state != COBRA_SOCKET_STATE_CLOSED) {
+        uv_mutex_unlock(&sock->mutex_handle);
+        return COBRA_SOCKET_ERR_NOT_CLOSED;
+    }
+
+    cobra_async_deinit(&sock->write_async);
+    cobra_async_deinit(&sock->close_async);
+    cobra_buffer_deinit(&sock->read_buffer);
     free(socket);
+
+    return COBRA_SOCKET_OK;
 }

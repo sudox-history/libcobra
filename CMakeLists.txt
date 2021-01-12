@@ -23,12 +23,12 @@ add_library(cobra_a
         src/queue/queue_read.c
         src/queue/queue_write.c
         src/utils.c
-        #src/socket/socket.c
+        src/socket/socket.c
         src/socket/socket_close.c
         src/socket/socket_connect.c
-        #src/socket/socket_ping.c
-        #src/socket/socket_read.c
-        #src/socket/socket_write.c
+        src/socket/socket_ping.c
+        src/socket/socket_read.c
+        src/socket/socket_write.c
         #src/server.c
         src/discovery.c
         src/platform.c)

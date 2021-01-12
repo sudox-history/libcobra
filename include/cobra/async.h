@@ -9,8 +9,8 @@
 
 typedef enum {
     COBRA_ASYNC_OK,
-    COBRA_ASYNC_QUEUE_FULL,
-    COBRA_ASYNC_QUEUE_OVERFLOW
+    COBRA_ASYNC_ERR_QUEUE_FULL,
+    COBRA_ASYNC_ERR_QUEUE_OVERFLOW
 } cobra_async_err_t;
 
 typedef struct cobra_async_t cobra_async_t;
