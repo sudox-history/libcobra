@@ -89,7 +89,6 @@ struct cobra_socket_t {
 
     uv_getaddrinfo_t *resolve_request;
     uv_connect_t *connect_request;
-
     cobra__socket_state_t state;
     cobra__socket_alive_t alive;
 
@@ -113,6 +112,10 @@ struct cobra_socket_t {
  */
 cobra_socket_t *cobra_socket_create(int write_queue_size);
 cobra_socket_err_t cobra_socket_destroy(cobra_socket_t *sock);
+#ifdef COBRA_SOCKET_SERVER_INTERNALS
+void cobra__socket_bind(cobra_socket_t *sock, uv_loop_t *loop);
+uv_tcp_t *cobra__socket_get_tcp_handle(cobra_socket_t *sock);
+#endif
 
 /**
  * Connection method

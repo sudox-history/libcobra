@@ -16,6 +16,9 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
     cobra_async_set_data(&sock->write_async, sock);
     cobra_async_set_data(&sock->close_async, sock);
 
+    sock->resolve_request = NULL;
+    sock->connect_request = NULL;
+
     cobra_async_set_callbacks(&sock->write_async,
                               cobra__socket_write_async_send_callback,
                               cobra__socket_write_async_drain_callback,

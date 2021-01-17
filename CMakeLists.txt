@@ -22,7 +22,8 @@ add_library(cobra_a
         src/queue/queue_memory.c
         src/queue/queue_read.c
         src/queue/queue_write.c
-        src/utils.c
+        src/server/server_listen.c
+        src/server/server_close.c
         src/socket/socket.c
         src/socket/socket_close.c
         src/socket/socket_connect.c
@@ -31,7 +32,8 @@ add_library(cobra_a
         src/socket/socket_write.c
         #src/server.c
         src/discovery.c
-        src/platform.c)
+        src/platform.c
+        src/utils.c)
 
 target_include_directories(cobra_a
         PUBLIC include)

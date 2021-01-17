@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "cobra/socket.h"
-#include "cobra/server.h"
+#include "../src/old/server_old.h"
 #include "cobra/discovery.h"
 
 #ifdef __cplusplus
