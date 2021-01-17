@@ -56,7 +56,7 @@ void cobra__server_close_async_send_callback(cobra_async_t *async, void *data) {
     server->closed_handlers_count = 0;
 }
 
-static void cobra__socket_common_close_callback(cobra_server_t *server) {
+static void cobra__server_common_close_callback(cobra_server_t *server) {
     server->closed_handlers_count++;
 
     if (server->closed_handlers_count == COBRA_SERVER_TOTAL_HANDLERS_COUNT) {
@@ -70,9 +70,9 @@ static void cobra__socket_common_close_callback(cobra_server_t *server) {
 }
 
 void cobra__server_close_callback(uv_handle_t *handle) {
-    cobra__socket_common_close_callback(uv_handle_get_data(handle));
+    cobra__server_common_close_callback(uv_handle_get_data(handle));
 }
 
 void cobra__server_async_close_callback(cobra_async_t *async) {
-    cobra__socket_common_close_callback(cobra_async_get_data(async));
+    cobra__server_common_close_callback(cobra_async_get_data(async));
 }

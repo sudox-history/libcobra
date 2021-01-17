@@ -24,7 +24,7 @@ cobra_server_t *cobra_server_create(int sockets_write_queue_size) {
     return server;
 }
 
-
+// TODO: You can call that method only if you sure that all connections are closed. Otherwise, UB will happen
 cobra_server_err_t cobra_server_destroy(cobra_server_t *server) {
     uv_mutex_lock(&server->mutex_handle);
 
