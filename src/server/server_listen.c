@@ -76,19 +76,19 @@ void cobra__server_resolve_callback(uv_getaddrinfo_t *resolve_request,
         return;
 
     if (error != 0) {
-        // TODO: Close server
+        cobra__server_close(server, COBRA_SERVER_ERR_RESOLVING);
         return;
     }
 
     if (uv_tcp_bind(&server->tcp_handle, addrinfo->ai_addr, 0) != 0) {
-        // TODO: Close server
+        cobra__server_close(server, COBRA_SERVER_ERR_BINDING);
         return;
     }
 
     if (uv_listen((uv_stream_t *) &server->tcp_handle,
                   COBRA_SERVER_BACKLOG,
                   cobra__server_connection_callback) != 0) {
-        // TODO: Close server
+        cobra__server_close(server, COBRA_SERVER_ERR_LISTENING);
         return;
     }
 
@@ -99,7 +99,7 @@ void cobra__server_connection_callback(uv_stream_t *tcp_handle, int error) {
     cobra_server_t *server = tcp_handle->data;
 
     if (error != 0) {
-        // TODO: Close server
+        cobra__server_close(server, COBRA_SERVER_OK);
         return;
     }
 

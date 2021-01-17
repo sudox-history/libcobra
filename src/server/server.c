@@ -11,7 +11,11 @@ cobra_server_t *cobra_server_create(int sockets_write_queue_size) {
     uv_handle_set_data((uv_handle_t *) &server->tcp_handle, server);
     cobra_async_set_data(&server->close_async, server);
 
+    server->state = COBRA_SERVER_STATE_CLOSED;
     server->resolve_request = NULL;
+    server->sockets_write_queue_size = sockets_write_queue_size;
+    server->closed_handlers_count = 0;
+
     cobra_async_set_callbacks(&server->close_async,
                               cobra__server_close_async_send_callback,
                               NULL,

@@ -15,8 +15,12 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
     cobra_async_set_data(&sock->write_async, sock);
     cobra_async_set_data(&sock->close_async, sock);
 
+    sock->state = COBRA_SOCKET_STATE_CLOSED;
+    sock->alive = COBRA_SOCKET_ALIVE_OK;
+    sock->read_frame_body_length = 0;
     sock->resolve_request = NULL;
     sock->connect_request = NULL;
+    sock->closed_handlers_count = 0;
 
     cobra_async_set_callbacks(&sock->write_async,
                               cobra__socket_write_async_send_callback,
@@ -53,6 +57,11 @@ void cobra__socket_bind(cobra_socket_t *sock, uv_loop_t *loop) {
     uv_tcp_init(loop, &sock->tcp_handle);
     uv_timer_init(loop, &sock->timer_handle);
     uv_timer_init(loop, &sock->check_timer_handle);
+    cobra_async_bind(&sock->write_async, loop);
+    cobra_async_bind(&sock->close_async, loop);
+
+    sock->state = COBRA_SOCKET_STATE_CONNECTED;
+    sock->alive = COBRA_SOCKET_ALIVE_OK;
 }
 
 uv_tcp_t *cobra__socket_get_tcp_handle(cobra_socket_t *sock) {

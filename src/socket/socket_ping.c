@@ -8,7 +8,7 @@ void cobra__socket_start_ping(cobra_socket_t *sock) {
                    COBRA_SOCKET_PING_TIMEOUT);
 }
 
-void cobra__socket_refresh_timer(cobra_socket_t *sock) {
+void cobra__socket_ping_refresh_timer(cobra_socket_t *sock) {
     uv_timer_again(&sock->timer_handle);
 }
 
