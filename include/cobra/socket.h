@@ -104,6 +104,8 @@ struct cobra_socket_t {
     cobra_socket_read_cb read_callback;
     cobra_socket_write_cb write_callback;
     cobra_socket_drain_cb drain_callback;
+
+    void *data;
 };
 #endif
 
@@ -215,5 +217,19 @@ void cobra__socket_ping_frame(cobra_socket_t *sock);
 void cobra__socket_timer_callback(uv_timer_t *timer_handle);
 void cobra__socket_check_timer_callback(uv_timer_t *timer_handle);
 #endif
+
+/**
+ * Getters and setters
+ */
+void cobra_socket_set_callbacks(cobra_socket_t *sock,
+                                cobra_socket_connect_cb connect_callback,
+                                cobra_socket_close_cb close_callback,
+                                cobra_socket_alloc_cb alloc_callback,
+                                cobra_socket_read_cb read_callback,
+                                cobra_socket_write_cb write_callback,
+                                cobra_socket_drain_cb drain_callback);
+
+void cobra_socket_set_data(cobra_socket_t *sock, void *data);
+void *cobra_socket_get_data(cobra_socket_t *sock);
 
 #endif//COBRA_SOCKET_H

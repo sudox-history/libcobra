@@ -33,7 +33,7 @@ add_library(cobra_a
         #src/server.c
         src/discovery.c
         src/platform.c
-        src/utils.c)
+        src/utils.c src/server/server.c src/server/server_get_set.c src/socket/socket_get_set.c)
 
 target_include_directories(cobra_a
         PUBLIC include)

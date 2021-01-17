@@ -6,7 +6,6 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
 
     uv_loop_init(&sock->loop);
     uv_mutex_init(&sock->mutex_handle);
-
     cobra_async_init(&sock->write_async, write_queue_size);
     cobra_async_init(&sock->close_async, 1);
 
@@ -41,10 +40,21 @@ cobra_socket_err_t cobra_socket_destroy(cobra_socket_t *sock) {
         return COBRA_SOCKET_ERR_NOT_CLOSED;
     }
 
+    uv_mutex_unlock(&sock->mutex_handle);
     cobra_async_deinit(&sock->write_async);
     cobra_async_deinit(&sock->close_async);
     cobra_buffer_deinit(&sock->read_buffer);
     free(socket);
 
     return COBRA_SOCKET_OK;
+}
+
+void cobra__socket_bind(cobra_socket_t *sock, uv_loop_t *loop) {
+    uv_tcp_init(loop, &sock->tcp_handle);
+    uv_timer_init(loop, &sock->timer_handle);
+    uv_timer_init(loop, &sock->check_timer_handle);
+}
+
+uv_tcp_t *cobra__socket_get_tcp_handle(cobra_socket_t *sock) {
+    return &sock->tcp_handle;
 }
