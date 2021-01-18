@@ -5,7 +5,8 @@ cobra_socket_err_t cobra_socket_close(cobra_socket_t *sock) {
     return cobra__socket_close(sock, COBRA_SOCKET_OK);
 }
 
-cobra_socket_err_t cobra__socket_close(cobra_socket_t *sock, cobra_socket_err_t error) {
+cobra_socket_err_t cobra__socket_close(cobra_socket_t *sock,
+                                       cobra_socket_err_t error) {
     uv_mutex_lock(&sock->mutex_handle);
 
     if (sock->state == COBRA_SOCKET_STATE_CLOSED) {
@@ -22,8 +23,8 @@ cobra_socket_err_t cobra__socket_close(cobra_socket_t *sock, cobra_socket_err_t 
     sock->state = COBRA_SOCKET_STATE_CLOSING;
     uv_mutex_unlock(&sock->mutex_handle);
 
-    cobra__socket_close_ctx_t *close_ctx
-            = malloc(sizeof(cobra__socket_close_ctx_t));
+    cobra__socket_close_ctx_t *close_ctx =
+        malloc(sizeof(cobra__socket_close_ctx_t));
 
     close_ctx->sock = sock;
     close_ctx->error = error;
@@ -45,16 +46,18 @@ void cobra__socket_close_async_send_callback(cobra_async_t *async, void *data) {
 
     // Cancel requests
     if (sock->resolve_request != NULL)
-        uv_cancel((uv_req_t *) sock->resolve_request);
+        uv_cancel((uv_req_t *)sock->resolve_request);
 
     if (sock->connect_request != NULL)
-        uv_cancel((uv_req_t *) sock->connect_request);
+        uv_cancel((uv_req_t *)sock->connect_request);
 
     // Close handlers and async structures.
-    // It's safe to close them here because only one callback can be executed at time
-    uv_close((uv_handle_t *) &sock->tcp_handle, cobra__socket_close_callback);
-    uv_close((uv_handle_t *) &sock->timer_handle, cobra__socket_close_callback);
-    uv_close((uv_handle_t *) &sock->check_timer_handle, cobra__socket_close_callback);
+    // It's safe to close them here because only one callback can be executed at
+    // time
+    uv_close((uv_handle_t *)&sock->tcp_handle, cobra__socket_close_callback);
+    uv_close((uv_handle_t *)&sock->timer_handle, cobra__socket_close_callback);
+    uv_close((uv_handle_t *)&sock->check_timer_handle,
+             cobra__socket_close_callback);
     cobra_async_close(&sock->write_async);
     cobra_async_close(&sock->close_async);
 

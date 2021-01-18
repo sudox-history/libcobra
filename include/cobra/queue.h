@@ -39,11 +39,10 @@ void cobra_queue_clear(cobra_queue_t *queue);
 void *cobra_queue_read(cobra_queue_t *queue);
 // TODO: Implement cobra_queue_read_start
 
-
 /**
  * Write methods
  */
 void cobra_queue_write(cobra_queue_t *queue, void *data);
 // TODO: Implement cobra_queue_write_start
 
-#endif//COBRA_QUEUE_H
+#endif  // COBRA_QUEUE_H

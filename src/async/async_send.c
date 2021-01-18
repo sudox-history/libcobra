@@ -19,7 +19,7 @@ cobra_async_err_t cobra_async_send(cobra_async_t *async, void *data) {
 }
 
 void cobra__async_send_callback(uv_async_t *async_handle) {
-    cobra_async_t *async = uv_handle_get_data((uv_handle_t *) async_handle);
+    cobra_async_t *async = uv_handle_get_data((uv_handle_t *)async_handle);
 
     uv_mutex_lock(&async->mutex_handle);
     bool drain_flag = cobra_queue_capacity(&async->data_queue) == 0;

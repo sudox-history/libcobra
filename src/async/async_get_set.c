@@ -10,7 +10,6 @@ void cobra_async_set_callbacks(cobra_async_t *async,
     async->close_callback = close_callback;
 }
 
-
 void cobra_async_set_data(cobra_async_t *async, void *data) {
     async->data = data;
 }

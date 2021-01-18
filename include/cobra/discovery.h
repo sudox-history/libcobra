@@ -2,11 +2,11 @@
 #define COBRA_DISCOVERY_H
 
 #ifdef COBRA_DISCOVERY_PRIVATE
-#include <uv.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <uv.h>
 #include "cobra/buffer.h"
 #endif
 
@@ -27,11 +27,11 @@ uint8_t COBRA_DISCOVERY_PACKET[] = {8, 100, 193, 210, 19};
 
 typedef struct cobra_discovery_t cobra_discovery_t;
 
-typedef void (*cobra_discovery_found_cb)
-        (cobra_discovery_t *discovery, char *host);
+typedef void (*cobra_discovery_found_cb)(cobra_discovery_t *discovery,
+                                         char *host);
 
-typedef void (*cobra_discovery_close_cb)
-        (cobra_discovery_t *discovery, int error);
+typedef void (*cobra_discovery_close_cb)(cobra_discovery_t *discovery,
+                                         int error);
 
 #ifdef COBRA_DISCOVERY_PRIVATE
 struct cobra_discovery_t {
@@ -73,4 +73,4 @@ void cobra_discovery_set_callbacks(cobra_discovery_t *discovery,
                                    cobra_discovery_found_cb on_found,
                                    cobra_discovery_close_cb on_close);
 
-#endif //COBRA_DISCOVERY_H
+#endif  // COBRA_DISCOVERY_H

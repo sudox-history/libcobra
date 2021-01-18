@@ -4,18 +4,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 #ifdef COBRA_SOCKET_PRIVATE
-#include "cobra/async.h"
-#include "cobra/buffer.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <uv.h>
+#include "cobra/async.h"
+#include "cobra/buffer.h"
 #endif
 
 #define COBRA_SOCKET_FRAME_HEADER_LENGTH 2u
 
 #define COBRA_SOCKET_FRAME_BODY_MAX_LENGTH \
-    ((int) ((1u << (8 * COBRA_SOCKET_FRAME_HEADER_LENGTH)) - 1))
+    ((int)((1u << (8 * COBRA_SOCKET_FRAME_HEADER_LENGTH)) - 1))
 
 #define COBRA_SOCKET_FRAME_MAX_LENGTH \
     COBRA_SOCKET_FRAME_BODY_MAX_LENGTH + COBRA_SOCKET_FRAME_HEADER_LENGTH
@@ -56,23 +56,25 @@ typedef enum {
 
 typedef struct cobra_socket_t cobra_socket_t;
 
-typedef void (*cobra_socket_connect_cb)
-        (cobra_socket_t *socket);
+typedef void (*cobra_socket_connect_cb)(cobra_socket_t *socket);
 
-typedef void (*cobra_socket_close_cb)
-        (cobra_socket_t *socket, cobra_socket_err_t error);
+typedef void (*cobra_socket_close_cb)(cobra_socket_t *socket,
+                                      cobra_socket_err_t error);
 
-typedef void (*cobra_socket_alloc_cb)
-        (cobra_socket_t *socket, uint8_t **data, uint64_t length);
+typedef void (*cobra_socket_alloc_cb)(cobra_socket_t *socket,
+                                      uint8_t **data,
+                                      uint64_t length);
 
-typedef void (*cobra_socket_read_cb)
-        (cobra_socket_t *socket, uint8_t *data, uint64_t length);
+typedef void (*cobra_socket_read_cb)(cobra_socket_t *socket,
+                                     uint8_t *data,
+                                     uint64_t length);
 
-typedef void (*cobra_socket_write_cb)
-        (cobra_socket_t *socket, uint8_t *data, uint64_t length, cobra_socket_err_t error);
+typedef void (*cobra_socket_write_cb)(cobra_socket_t *socket,
+                                      uint8_t *data,
+                                      uint64_t length,
+                                      cobra_socket_err_t error);
 
-typedef void (*cobra_socket_drain_cb)
-        (cobra_socket_t *socket);
+typedef void (*cobra_socket_drain_cb)(cobra_socket_t *socket);
 
 #ifdef COBRA_SOCKET_PRIVATE
 #define COBRA_SOCKET_TOTAL_HANDLERS_COUNT 5
@@ -122,7 +124,9 @@ uv_tcp_t *cobra__socket_get_tcp_handle(cobra_socket_t *sock);
 /**
  * Connection method
  */
-cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock, char *host, char *port);
+cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock,
+                                        char *host,
+                                        char *port);
 #ifdef COBRA_SOCKET_PRIVATE
 typedef struct {
     cobra_socket_t *sock;
@@ -136,8 +140,7 @@ void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
                                     int error,
                                     struct addrinfo *addrinfo);
 
-void cobra__socket_connect_callback(uv_connect_t *connect_request,
-                                    int error);
+void cobra__socket_connect_callback(uv_connect_t *connect_request, int error);
 #endif
 
 /**
@@ -145,14 +148,16 @@ void cobra__socket_connect_callback(uv_connect_t *connect_request,
  */
 cobra_socket_err_t cobra_socket_close(cobra_socket_t *sock);
 #ifdef COBRA_SOCKET_PRIVATE
-cobra_socket_err_t cobra__socket_close(cobra_socket_t *sock, cobra_socket_err_t error);
+cobra_socket_err_t cobra__socket_close(cobra_socket_t *sock,
+                                       cobra_socket_err_t error);
 
 typedef struct {
     cobra_socket_t *sock;
     cobra_socket_err_t error;
 } cobra__socket_close_ctx_t;
 
-void cobra__socket_close_async_send_callback(cobra_async_t *async, void *close_context);
+void cobra__socket_close_async_send_callback(cobra_async_t *async,
+                                             void *close_context);
 void cobra__socket_async_close_callback(cobra_async_t *async);
 
 void cobra__socket_close_callback(uv_handle_t *handle);
@@ -178,9 +183,13 @@ void cobra__socket_read_callback(uv_stream_t *tcp_handle,
 /**
  * Writing method
  */
-cobra_socket_err_t cobra_socket_write(cobra_socket_t *sock, uint8_t *data, uint64_t length);
+cobra_socket_err_t cobra_socket_write(cobra_socket_t *sock,
+                                      uint8_t *data,
+                                      uint64_t length);
 #ifdef COBRA_SOCKET_PRIVATE
-cobra_socket_err_t cobra__socket_write(cobra_socket_t *sock, uint8_t *data, uint64_t length);
+cobra_socket_err_t cobra__socket_write(cobra_socket_t *sock,
+                                       uint8_t *data,
+                                       uint64_t length);
 
 typedef struct {
     cobra_socket_t *sock;
@@ -196,7 +205,8 @@ typedef struct {
     uv_write_t request;
 } cobra__socket_uv_write_ctx_t;
 
-void cobra__socket_write_async_send_callback(cobra_async_t *async, void *write_context);
+void cobra__socket_write_async_send_callback(cobra_async_t *async,
+                                             void *write_context);
 void cobra__socket_write_async_drain_callback(cobra_async_t *async);
 
 void cobra__socket_write_callback(uv_write_t *write_request, int error);
@@ -232,4 +242,4 @@ void cobra_socket_set_callbacks(cobra_socket_t *sock,
 void cobra_socket_set_data(cobra_socket_t *sock, void *data);
 void *cobra_socket_get_data(cobra_socket_t *sock);
 
-#endif//COBRA_SOCKET_H
+#endif  // COBRA_SOCKET_H

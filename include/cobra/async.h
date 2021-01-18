@@ -15,14 +15,11 @@ typedef enum {
 
 typedef struct cobra_async_t cobra_async_t;
 
-typedef void (*cobra_async_send_cb)
-        (cobra_async_t *async, void *data);
+typedef void (*cobra_async_send_cb)(cobra_async_t *async, void *data);
 
-typedef void (*cobra_async_drain_cb)
-        (cobra_async_t *async);
+typedef void (*cobra_async_drain_cb)(cobra_async_t *async);
 
-typedef void (*cobra_async_close_cb)
-        (cobra_async_t *async);
+typedef void (*cobra_async_close_cb)(cobra_async_t *async);
 
 struct cobra_async_t {
     uv_mutex_t mutex_handle;
@@ -70,5 +67,4 @@ void cobra_async_set_callbacks(cobra_async_t *async,
 void cobra_async_set_data(cobra_async_t *async, void *data);
 void *cobra_async_get_data(cobra_async_t *async);
 
-
-#endif //COBRA_ASYNC_H
+#endif  // COBRA_ASYNC_H

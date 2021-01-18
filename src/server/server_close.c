@@ -5,7 +5,8 @@ cobra_server_err_t cobra_server_close(cobra_server_t *server) {
     return cobra__server_close(server, COBRA_SERVER_OK);
 }
 
-cobra_server_err_t cobra__server_close(cobra_server_t *server, cobra_server_err_t error) {
+cobra_server_err_t cobra__server_close(cobra_server_t *server,
+                                       cobra_server_err_t error) {
     uv_mutex_lock(&server->mutex_handle);
 
     if (server->state == COBRA_SERVER_STATE_CLOSED) {
@@ -22,8 +23,8 @@ cobra_server_err_t cobra__server_close(cobra_server_t *server, cobra_server_err_
     server->state = COBRA_SERVER_STATE_CLOSING;
     uv_mutex_unlock(&server->mutex_handle);
 
-    cobra__server_close_ctx_t *close_ctx
-            = malloc(sizeof(cobra__server_close_ctx_t));
+    cobra__server_close_ctx_t *close_ctx =
+        malloc(sizeof(cobra__server_close_ctx_t));
 
     close_ctx->server = server;
     close_ctx->error = error;
@@ -45,11 +46,12 @@ void cobra__server_close_async_send_callback(cobra_async_t *async, void *data) {
 
     // Cancel requests
     if (server->resolve_request != NULL)
-        uv_cancel((uv_req_t *) server->resolve_request);
+        uv_cancel((uv_req_t *)server->resolve_request);
 
     // Close handlers and async structures.
-    // It's safe to close them here because only one callback can be executed at time
-    uv_close((uv_handle_t *) &server->tcp_handle, cobra__server_close_callback);
+    // It's safe to close them here because only one callback can be executed at
+    // time
+    uv_close((uv_handle_t *)&server->tcp_handle, cobra__server_close_callback);
     cobra_async_close(&server->close_async);
 
     server->close_error = error;

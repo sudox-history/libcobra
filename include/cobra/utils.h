@@ -10,4 +10,3 @@ void cobra_utils_flip_array(uint8_t *array, int length);
 void cobra_utils_print_array(uint8_t *array, int length);
 
 #endif
-

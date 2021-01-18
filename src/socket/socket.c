@@ -9,9 +9,9 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
     cobra_async_init(&sock->write_async, write_queue_size);
     cobra_async_init(&sock->close_async, 1);
 
-    uv_handle_set_data((uv_handle_t *) &sock->tcp_handle, sock);
-    uv_handle_set_data((uv_handle_t *) &sock->timer_handle, sock);
-    uv_handle_set_data((uv_handle_t *) &sock->check_timer_handle, sock);
+    uv_handle_set_data((uv_handle_t *)&sock->tcp_handle, sock);
+    uv_handle_set_data((uv_handle_t *)&sock->timer_handle, sock);
+    uv_handle_set_data((uv_handle_t *)&sock->check_timer_handle, sock);
     cobra_async_set_data(&sock->write_async, sock);
     cobra_async_set_data(&sock->close_async, sock);
 
@@ -28,8 +28,7 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
                               cobra__socket_async_close_callback);
 
     cobra_async_set_callbacks(&sock->close_async,
-                              cobra__socket_close_async_send_callback,
-                              NULL,
+                              cobra__socket_close_async_send_callback, NULL,
                               cobra__socket_async_close_callback);
 
     cobra_buffer_init(&sock->read_buffer, COBRA_SOCKET_FRAME_MAX_LENGTH);

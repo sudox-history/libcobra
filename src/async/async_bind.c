@@ -7,7 +7,7 @@ void cobra_async_bind(cobra_async_t *async, uv_loop_t *loop) {
 }
 
 void cobra_async_close(cobra_async_t *async) {
-    uv_close((uv_handle_t *) &async->async_handle, cobra__async_close_callback);
+    uv_close((uv_handle_t *)&async->async_handle, cobra__async_close_callback);
 }
 
 void cobra__async_close_callback(uv_handle_t *async_handle) {

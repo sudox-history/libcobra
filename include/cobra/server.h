@@ -2,11 +2,11 @@
 #define COBRA_SERVER_H
 
 #ifdef COBRA_SERVER_PRIVATE
-#include <uv.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <uv.h>
 
 #include "cobra/async.h"
 #define COBRA_SOCKET_SERVER_INTERNALS
@@ -35,11 +35,11 @@ typedef enum {
 
 typedef struct cobra_server_t cobra_server_t;
 
-typedef void (*cobra_server_connection_cb)
-        (cobra_server_t *server, cobra_socket_t *socket);
+typedef void (*cobra_server_connection_cb)(cobra_server_t *server,
+                                           cobra_socket_t *socket);
 
-typedef void (*cobra_server_close_cb)
-        (cobra_server_t *server, cobra_server_err_t error);
+typedef void (*cobra_server_close_cb)(cobra_server_t *server,
+                                      cobra_server_err_t error);
 
 #ifdef COBRA_SERVER_PRIVATE
 #define COBRA_SERVER_BACKLOG 128
@@ -75,7 +75,9 @@ cobra_server_err_t cobra_server_destroy(cobra_server_t *server);
 /**
  * Listening method
  */
-cobra_server_err_t cobra_server_listen(cobra_server_t *server, char *host, char *port);
+cobra_server_err_t cobra_server_listen(cobra_server_t *server,
+                                       char *host,
+                                       char *port);
 #ifdef COBRA_SERVER_PRIVATE
 typedef struct {
     cobra_server_t *server;
@@ -97,7 +99,8 @@ void cobra__server_connection_callback(uv_stream_t *tcp_handle, int error);
  */
 cobra_server_err_t cobra_server_close(cobra_server_t *server);
 #ifdef COBRA_SERVER_PRIVATE
-cobra_server_err_t cobra__server_close(cobra_server_t *server, cobra_server_err_t error);
+cobra_server_err_t cobra__server_close(cobra_server_t *server,
+                                       cobra_server_err_t error);
 
 typedef struct {
     cobra_server_t *server;
@@ -117,4 +120,4 @@ void cobra_server_set_callbacks(cobra_server_t *server,
                                 cobra_server_connection_cb connection_callback,
                                 cobra_server_close_cb close_callback);
 
-#endif //COBRA_SERVER_H
+#endif  // COBRA_SERVER_H

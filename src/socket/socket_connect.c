@@ -1,7 +1,9 @@
 #define COBRA_SOCKET_PRIVATE
 #include "cobra/socket.h"
 
-cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock, char *host, char *port) {
+cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock,
+                                        char *host,
+                                        char *port) {
     uv_mutex_lock(&sock->mutex_handle);
 
     if (sock->state != COBRA_SOCKET_STATE_CLOSED) {
@@ -23,15 +25,14 @@ cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock, char *host, char *
 
     uv_mutex_unlock(&sock->mutex_handle);
 
-    cobra__socket_connect_ctx_t *connect_ctx
-            = malloc(sizeof(cobra__socket_connect_ctx_t));
+    cobra__socket_connect_ctx_t *connect_ctx =
+        malloc(sizeof(cobra__socket_connect_ctx_t));
 
     connect_ctx->sock = sock;
     connect_ctx->host = host;
     connect_ctx->port = port;
 
-    uv_thread_create(&sock->thread_handle,
-                     cobra__socket_connect_thread,
+    uv_thread_create(&sock->thread_handle, cobra__socket_connect_thread,
                      connect_ctx);
 
     return COBRA_SOCKET_OK;
@@ -55,14 +56,10 @@ void cobra__socket_connect_thread(void *data) {
         uv_mutex_unlock(&sock->mutex_handle);
 
         sock->resolve_request = malloc(sizeof(uv_getaddrinfo_t));
-        uv_req_set_data((uv_req_t *) sock->resolve_request, sock);
+        uv_req_set_data((uv_req_t *)sock->resolve_request, sock);
 
-        uv_getaddrinfo(&sock->loop,
-                       sock->resolve_request,
-                       cobra__socket_resolve_callback,
-                       host,
-                       port,
-                       NULL);
+        uv_getaddrinfo(&sock->loop, sock->resolve_request,
+                       cobra__socket_resolve_callback, host, port, NULL);
     } else {
         uv_mutex_unlock(&sock->mutex_handle);
     }
@@ -73,7 +70,7 @@ void cobra__socket_connect_thread(void *data) {
 void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
                                     int error,
                                     struct addrinfo *addrinfo) {
-    cobra_socket_t *sock = uv_req_get_data((uv_req_t *) resolve_request);
+    cobra_socket_t *sock = uv_req_get_data((uv_req_t *)resolve_request);
 
     free(resolve_request);
     sock->resolve_request = NULL;
@@ -92,20 +89,17 @@ void cobra__socket_resolve_callback(uv_getaddrinfo_t *resolve_request,
     uv_mutex_unlock(&sock->mutex_handle);
 
     sock->connect_request = malloc(sizeof(uv_connect_t));
-    uv_req_set_data((uv_req_t *) sock->connect_request, sock);
+    uv_req_set_data((uv_req_t *)sock->connect_request, sock);
 
-    uv_tcp_connect(sock->connect_request,
-                   &sock->tcp_handle,
-                   addrinfo->ai_addr,
+    uv_tcp_connect(sock->connect_request, &sock->tcp_handle, addrinfo->ai_addr,
                    cobra__socket_connect_callback);
 
     // Specified in libuv docs
     uv_freeaddrinfo(addrinfo);
 }
 
-void cobra__socket_connect_callback(uv_connect_t *connect_request,
-                                    int error) {
-    cobra_socket_t *sock = uv_req_get_data((uv_req_t *) connect_request);
+void cobra__socket_connect_callback(uv_connect_t *connect_request, int error) {
+    cobra_socket_t *sock = uv_req_get_data((uv_req_t *)connect_request);
 
     free(connect_request);
     sock->connect_request = NULL;

@@ -24,7 +24,9 @@ void cobra_buffer_fragment(cobra_buffer_t *buffer) {
     buffer->write_pointer = buffer->head_pointer + length;
 }
 
-bool cobra_buffer_equals(cobra_buffer_t *buffer, const uint8_t *data, uint64_t length) {
+bool cobra_buffer_equals(cobra_buffer_t *buffer,
+                         const uint8_t *data,
+                         uint64_t length) {
     if (cobra_buffer_length(buffer) != length)
         return false;
 
