@@ -24,6 +24,8 @@ typedef enum {
 } cobra_server_err_t;
 
 #ifdef COBRA_SERVER_PRIVATE
+#define COBRA_SERVER_BACKLOG 128
+
 typedef enum {
     COBRA_SERVER_STATE_INITIALIZING = 1,
     COBRA_SERVER_STATE_RESOLVING,
@@ -42,7 +44,6 @@ typedef void (*cobra_server_close_cb)(cobra_server_t *server,
                                       cobra_server_err_t error);
 
 #ifdef COBRA_SERVER_PRIVATE
-#define COBRA_SERVER_BACKLOG 128
 #define COBRA_SERVER_TOTAL_HANDLERS_COUNT 2
 struct cobra_server_t {
     uv_loop_t loop;

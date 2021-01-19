@@ -33,7 +33,11 @@ add_library(cobra_a
         src/socket/socket_read.c
         src/socket/socket_write.c
         src/socket/socket_get_set.c
-        src/discovery.c
+        src/discovery/discovery.c
+        src/discovery/discovery_listen.c
+        src/discovery/discovery_scan.c
+        src/discovery/discovery_close.c
+        src/discovery/discovery_get_set.c
         src/platform.c
         src/utils.c)
 
