@@ -92,7 +92,7 @@ void cobra__discovery_listener_read_callback(uv_udp_t *udp_handle,
                              COBRA_DISCOVERY_PACKET_SIZE))
         return;
 
-    uv_buf_t send_buffer = {.base = (char *)COBRA_DISCOVERY_PACKET,
+    uv_buf_t send_buffer = {.base = (char *)discovery_packet,
                             .len = COBRA_DISCOVERY_PACKET_SIZE};
 
     uv_udp_send_t *send_request = malloc(sizeof(uv_udp_send_t));

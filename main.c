@@ -17,7 +17,7 @@ int main() {
     cobra_discovery_t *discovery = cobra_discovery_create();
     cobra_discovery_set_callbacks(discovery, on_found, on_close);
 
-    cobra_discovery_listen(discovery);
+    cobra_discovery_scan(discovery);
 
     scanf("%d");
 }

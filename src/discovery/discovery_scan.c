@@ -70,7 +70,8 @@ void cobra__discovery_scanner_timer_callback(uv_timer_t *timer_handle) {
     struct sockaddr_in addr;
     uv_ip4_addr(COBRA_DISCOVERY_MULTICAST_ADDR, COBRA_DISCOVERY_PORT, &addr);
 
-    uv_buf_t send_buffer = {.base = (char *)COBRA_DISCOVERY_PACKET, .len = 5};
+    uint8_t discovery_packet[COBRA_DISCOVERY_PACKET_SIZE] = COBRA_DISCOVERY_PACKET;
+    uv_buf_t send_buffer = {.base = (char *)discovery_packet, .len = 5};
 
     uv_udp_send_t *send_req = malloc(sizeof(uv_udp_send_t));
     send_req->data = discovery;
