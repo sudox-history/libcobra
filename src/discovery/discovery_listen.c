@@ -87,15 +87,16 @@ void cobra__discovery_listener_read_callback(uv_udp_t *udp_handle,
     // Skipping wrote bytes
     cobra_buffer_write_void(&discovery->read_buffer, length);
 
-    if (!cobra_buffer_equals(&discovery->read_buffer, COBRA_DISCOVERY_PACKET,
-                             sizeof(COBRA_DISCOVERY_PACKET)))
+    uint8_t discovery_packet[COBRA_DISCOVERY_PACKET_SIZE] = COBRA_DISCOVERY_PACKET;
+    if (!cobra_buffer_equals(&discovery->read_buffer, discovery_packet,
+                             COBRA_DISCOVERY_PACKET_SIZE))
         return;
 
     uv_buf_t send_buffer = {.base = (char *)COBRA_DISCOVERY_PACKET,
-                            .len = sizeof(COBRA_DISCOVERY_PACKET)};
+                            .len = COBRA_DISCOVERY_PACKET_SIZE};
 
     uv_udp_send_t *send_request = malloc(sizeof(uv_udp_send_t));
-    uv_req_set_data(send_request, discovery);
+    uv_req_set_data((uv_req_t *) send_request, discovery);
 
     uv_udp_send(send_request, &discovery->udp_handle, &send_buffer, 1, addr,
                 cobra__discovery_listener_send_callback);

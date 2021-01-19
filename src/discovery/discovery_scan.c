@@ -93,8 +93,9 @@ void cobra__discovery_scanner_read_callback(uv_udp_t *udp_handle,
     // Skipping wrote bytes
     cobra_buffer_write_void(&discovery->read_buffer, length);
 
-    if (!cobra_buffer_equals(&discovery->read_buffer, COBRA_DISCOVERY_PACKET,
-                             sizeof(COBRA_DISCOVERY_PACKET)))
+    uint8_t discovery_packet[COBRA_DISCOVERY_PACKET_SIZE] = COBRA_DISCOVERY_PACKET;
+    if (!cobra_buffer_equals(&discovery->read_buffer, discovery_packet,
+                             COBRA_DISCOVERY_PACKET_SIZE))
         return;
 
     char host[COBRA_DISCOVERY_HOST_STRLEN];

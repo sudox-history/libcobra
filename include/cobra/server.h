@@ -13,6 +13,9 @@
 #include "cobra/socket.h"
 #endif
 
+// Necessary to include after private section!
+#include "cobra/socket.h"
+
 typedef enum {
     COBRA_SERVER_OK,
     COBRA_SERVER_ERR_ALREADY_OPENED,

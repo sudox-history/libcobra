@@ -1,5 +1,5 @@
 #ifndef COBRA_DISCOVERY_H
-#define CORBA_DISCOVERY_H
+#define COBRA_DISCOVERY_H
 
 #ifdef COBRA_DISCOVERY_PRIVATE
 #include <stdbool.h>
@@ -22,7 +22,8 @@ typedef enum {
 } cobra_discovery_err_t;
 
 #ifdef COBRA_DISCOVERY_PRIVATE
-uint8_t COBRA_DISCOVERY_PACKET[] = {8, 100, 193, 210, 19};
+#define COBRA_DISCOVERY_PACKET {8, 100, 193, 210, 19}
+#define COBRA_DISCOVERY_PACKET_SIZE 5
 #define COBRA_DISCOVERY_ANY_ADDR "0.0.0.0"
 #define COBRA_DISCOVERY_MULTICAST_ADDR "239.255.255.250"
 #define COBRA_DISCOVERY_PORT 55669
@@ -75,7 +76,7 @@ struct cobra_discovery_t {
  * Base methods
  */
 cobra_discovery_t *cobra_discovery_create();
-void cobra_discovery_destroy(cobra_discovery_t *discovery);
+cobra_discovery_err_t cobra_discovery_destroy(cobra_discovery_t *discovery);
 
 /**
  * Listen method

@@ -19,11 +19,11 @@ cobra_discovery_t *cobra_discovery_create() {
                               cobra__discovery_close_async_send_callback, NULL,
                               cobra__discovery_async_close_callback);
 
-    cobra_buffer_init(&discovery->read_buffer, sizeof(COBRA_DISCOVERY_PACKET));
+    cobra_buffer_init(&discovery->read_buffer, COBRA_DISCOVERY_PACKET_SIZE);
     return discovery;
 }
 
-void cobra_discovery_destroy(cobra_discovery_t *discovery) {
+cobra_discovery_err_t cobra_discovery_destroy(cobra_discovery_t *discovery) {
     uv_mutex_lock(&discovery->mutex_handle);
 
     if (discovery->state != COBRA_DISCOVERY_STATE_CLOSED) {
@@ -34,7 +34,7 @@ void cobra_discovery_destroy(cobra_discovery_t *discovery) {
     uv_mutex_unlock(&discovery->mutex_handle);
     cobra_async_deinit(&discovery->close_async);
     cobra_buffer_deinit(&discovery->read_buffer);
-    free(socket);
+    free(discovery);
 
     return COBRA_DISCOVERY_OK;
 }
