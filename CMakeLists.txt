@@ -9,23 +9,43 @@ add_subdirectory(deps/libuv)
 
 # libcobra
 # Current library
-set(COBRA_SOURCES src/buffer.c
-        src/buffer.h
-        src/tools.c
-        src/tools.h
-        src/socket.c
-        src/socket.h
-        src/server.c
-        src/server.h
-        src/discovery.c
-        src/discovery.h)
+set (COBRA_SOURCES
+        src/async/async.c
+        src/async/async_send.c
+        src/async/async_bind.c
+        src/async/async_get_set.c
+        src/buffer/buffer.c
+        src/buffer/buffer_write.c
+        src/buffer/buffer_read.c
+        src/buffer/buffer_memory.c
+        src/queue/queue.c
+        src/queue/queue_memory.c
+        src/queue/queue_read.c
+        src/queue/queue_write.c
+        src/server/server.c
+        src/server/server_listen.c
+        src/server/server_close.c
+        src/server/server_get_set.c
+        src/socket/socket.c
+        src/socket/socket_close.c
+        src/socket/socket_connect.c
+        src/socket/socket_ping.c
+        src/socket/socket_read.c
+        src/socket/socket_write.c
+        src/socket/socket_get_set.c
+        src/discovery/discovery.c
+        src/discovery/discovery_listen.c
+        src/discovery/discovery_scan.c
+        src/discovery/discovery_close.c
+        src/discovery/discovery_get_set.c
+        src/platform.c
+        src/utils.c)
 
 add_library(cobra_a STATIC ${COBRA_SOURCES})
 add_library(cobra SHARED ${COBRA_SOURCES})
 
 target_include_directories(cobra_a
-        PUBLIC include
-        INTERFACE src)
+        PUBLIC include)
 
 target_link_libraries(cobra_a
         PUBLIC uv_a)
@@ -36,11 +56,11 @@ target_link_libraries(cobra
 
 # Main
 # Used for fast testing during development
-#add_executable(main
-#        src/main.c)
-#
-#target_link_libraries(main
-#        cobra_a)
-#
-#target_link_options(main
-#        PUBLIC -fsanitize=address,undefined)
+# add_executable(main
+#         main.c)
+
+# target_link_libraries(main
+#         cobra_a)
+
+# target_link_options(main
+#         PUBLIC -fsanitize=address,undefined)

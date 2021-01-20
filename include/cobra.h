@@ -5,12 +5,12 @@
 extern "C" {
 #endif
 
-#include "socket.h"
-#include "server.h"
-#include "discovery.h"
+#include "cobra/discovery.h"
+#include "cobra/server.h"
+#include "cobra/socket.h"
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //COBRA_H
+#endif  // COBRA_H
