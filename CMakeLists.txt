@@ -50,11 +50,11 @@ target_link_libraries(cobra_a
 
 # Main
 # Used for fast testing during development
-add_executable(main
-        main.c)
+# add_executable(main
+#         main.c)
 
-target_link_libraries(main
-        cobra_a)
+# target_link_libraries(main
+#         cobra_a)
 
-target_link_options(main
-        PUBLIC -fsanitize=address,undefined)
+# target_link_options(main
+#         PUBLIC -fsanitize=address,undefined)
