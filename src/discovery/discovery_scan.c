@@ -73,10 +73,10 @@ void cobra__discovery_scanner_timer_callback(uv_timer_t *timer_handle) {
     uint8_t discovery_packet[COBRA_DISCOVERY_PACKET_SIZE] = COBRA_DISCOVERY_PACKET;
     uv_buf_t send_buffer = {.base = (char *)discovery_packet, .len = 5};
 
-    uv_udp_send_t *send_req = malloc(sizeof(uv_udp_send_t));
-    send_req->data = discovery;
+    uv_udp_send_t *send_request = malloc(sizeof(uv_udp_send_t));
+    uv_req_set_data((uv_req_t *) send_request, discovery);
 
-    uv_udp_send(send_req, &discovery->udp_handle, &send_buffer, 1,
+    uv_udp_send(send_request, &discovery->udp_handle, &send_buffer, 1,
                 (const struct sockaddr *)&addr,
                 cobra__discovery_listener_send_callback);
 }

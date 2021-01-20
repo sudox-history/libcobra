@@ -38,3 +38,23 @@ cobra_discovery_err_t cobra_discovery_destroy(cobra_discovery_t *discovery) {
 
     return COBRA_DISCOVERY_OK;
 }
+
+cobra_discovery_err_t cobra_discovery_get_addresses(cobra_discovery_addresses_cb addresses_callback) {
+    uv_interface_address_t *addresses;
+    int addresses_length;
+
+    int result = uv_interface_addresses(&addresses, &addresses_length);
+    if (result != 0)
+        return COBRA_DISCOVERY_ERR_GETTING_ADDRESSES;
+
+    for (int i = 0; i < addresses_length; i++) {
+        char host[COBRA_DISCOVERY_HOST_STRLEN];
+        uv_ip4_name(&addresses[i].address.address4 , host,
+                    COBRA_DISCOVERY_HOST_STRLEN);
+
+        addresses_callback(host);
+    }
+
+    uv_free_interface_addresses(addresses, addresses_length);
+    return COBRA_DISCOVERY_OK;
+}

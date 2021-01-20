@@ -18,11 +18,13 @@ typedef enum {
     COBRA_DISCOVERY_ERR_BINDING,
     COBRA_DISCOVERY_ERR_JOINING_GROUP,
     COBRA_DISCOVERY_ERR_SENDING_FRAME,
-    COBRA_DISCOVERY_ERR_NOT_CLOSED
+    COBRA_DISCOVERY_ERR_NOT_CLOSED,
+    COBRA_DISCOVERY_ERR_GETTING_ADDRESSES
 } cobra_discovery_err_t;
 
 #ifdef COBRA_DISCOVERY_PRIVATE
-#define COBRA_DISCOVERY_PACKET {8, 100, 193, 210, 19}
+#define COBRA_DISCOVERY_PACKET \
+    { 8, 100, 193, 210, 19 }
 #define COBRA_DISCOVERY_PACKET_SIZE 5
 #define COBRA_DISCOVERY_ANY_ADDR "0.0.0.0"
 #define COBRA_DISCOVERY_MULTICAST_ADDR "239.255.255.250"
@@ -46,6 +48,8 @@ typedef void (*cobra_discovery_found_cb)(cobra_discovery_t *discovery,
 
 typedef void (*cobra_discovery_close_cb)(cobra_discovery_t *discovery,
                                          cobra_discovery_err_t error);
+
+typedef void (*cobra_discovery_addresses_cb)(char *host);
 
 #ifdef COBRA_DISCOVERY_PRIVATE
 #define COBRA_DISCOVERY_TOTAL_HANDLERS_COUNT 3
@@ -77,6 +81,11 @@ struct cobra_discovery_t {
  */
 cobra_discovery_t *cobra_discovery_create();
 cobra_discovery_err_t cobra_discovery_destroy(cobra_discovery_t *discovery);
+
+/**
+ * Addresses
+ */
+cobra_discovery_err_t cobra_discovery_get_addresses(cobra_discovery_addresses_cb addresses_callback);
 
 /**
  * Listen method
