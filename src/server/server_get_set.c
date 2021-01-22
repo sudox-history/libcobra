@@ -15,6 +15,7 @@ void cobra_server_set_data(cobra_server_t *server, void *data) {
     server->data = data;
     uv_mutex_unlock(&server->mutex_handle);
 }
+
 void *cobra_server_get_data(cobra_server_t *server) {
     uv_mutex_lock(&server->mutex_handle);
     void *data = server->data;

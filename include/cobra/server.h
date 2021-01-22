@@ -124,4 +124,7 @@ void cobra_server_set_callbacks(cobra_server_t *server,
                                 cobra_server_connection_cb connection_callback,
                                 cobra_server_close_cb close_callback);
 
+void cobra_server_set_data(cobra_server_t *server, void *data);
+void *cobra_server_get_data(cobra_server_t *server);
+
 #endif  // COBRA_SERVER_H
