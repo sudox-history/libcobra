@@ -39,7 +39,7 @@ cobra_discovery_err_t cobra_discovery_destroy(cobra_discovery_t *discovery) {
     return COBRA_DISCOVERY_OK;
 }
 
-cobra_discovery_err_t cobra_discovery_get_addresses(
+cobra_discovery_err_t cobra_discovery_get_addresses(cobra_discovery_t *discovery,
     cobra_discovery_addresses_cb addresses_callback) {
     uv_interface_address_t *addresses;
     int addresses_length;
@@ -53,7 +53,7 @@ cobra_discovery_err_t cobra_discovery_get_addresses(
         uv_ip4_name(&addresses[i].address.address4, host,
                     COBRA_DISCOVERY_HOST_STRLEN);
 
-        addresses_callback(host);
+        addresses_callback(discovery, host);
     }
 
     uv_free_interface_addresses(addresses, addresses_length);

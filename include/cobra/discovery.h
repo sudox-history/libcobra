@@ -49,7 +49,7 @@ typedef void (*cobra_discovery_found_cb)(cobra_discovery_t *discovery,
 typedef void (*cobra_discovery_close_cb)(cobra_discovery_t *discovery,
                                          cobra_discovery_err_t error);
 
-typedef void (*cobra_discovery_addresses_cb)(char *host);
+typedef void (*cobra_discovery_addresses_cb)(cobra_discovery_t *discovery, char *host);
 
 #ifdef COBRA_DISCOVERY_PRIVATE
 #define COBRA_DISCOVERY_TOTAL_HANDLERS_COUNT 3
@@ -85,7 +85,8 @@ cobra_discovery_err_t cobra_discovery_destroy(cobra_discovery_t *discovery);
 /**
  * Addresses
  */
-cobra_discovery_err_t cobra_discovery_get_addresses(cobra_discovery_addresses_cb addresses_callback);
+cobra_discovery_err_t cobra_discovery_get_addresses(cobra_discovery_t *discovery,
+                                                    cobra_discovery_addresses_cb addresses_callback);
 
 /**
  * Listen method
