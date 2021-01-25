@@ -53,6 +53,9 @@ target_link_libraries(cobra_a
 target_link_libraries(cobra
         PUBLIC uv_a)
 
+target_include_directories(cobra
+        PUBLIC include)
+
 
 # Main
 # Used for fast testing during development

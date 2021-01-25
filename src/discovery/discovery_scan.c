@@ -34,7 +34,7 @@ void cobra__discovery_scan_thread(void *data) {
     cobra_discovery_t *discovery = listen_ctx->discovery;
 
     // Don't forget to free context
-    free(discovery);
+    free(listen_ctx);
 
     uv_mutex_lock(&discovery->mutex_handle);
 
