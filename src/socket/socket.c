@@ -32,6 +32,13 @@ cobra_socket_t *cobra_socket_create(int write_queue_size) {
                               cobra__socket_async_close_callback);
 
     cobra_buffer_init(&sock->read_buffer, COBRA_SOCKET_FRAME_MAX_LENGTH);
+    sock->connect_callback = NULL;
+    sock->close_callback = NULL;
+    sock->alloc_callback = NULL;
+    sock->read_callback = NULL;
+    sock->write_callback = NULL;
+    sock->drain_callback = NULL;
+
     return sock;
 }
 

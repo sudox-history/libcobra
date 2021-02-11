@@ -20,6 +20,9 @@ cobra_server_t *cobra_server_create(int sockets_write_queue_size) {
                               cobra__server_close_async_send_callback, NULL,
                               cobra__server_async_close_callback);
 
+    server->connection_callback = NULL;
+    server->close_callback = NULL;
+
     return server;
 }
 

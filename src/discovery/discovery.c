@@ -20,6 +20,10 @@ cobra_discovery_t *cobra_discovery_create() {
                               cobra__discovery_async_close_callback);
 
     cobra_buffer_init(&discovery->read_buffer, COBRA_DISCOVERY_PACKET_SIZE);
+
+    discovery->found_callback = NULL;
+    discovery->close_callback = NULL;
+
     return discovery;
 }
 
