@@ -28,9 +28,15 @@ cobra_socket_err_t cobra_socket_connect(cobra_socket_t *sock,
     cobra__socket_connect_ctx_t *connect_ctx =
         malloc(sizeof(cobra__socket_connect_ctx_t));
 
+    char *host_copy = malloc(strlen(host) + 1);
+    char *port_copy = malloc(strlen(port) + 1);
+
+    strcpy(host_copy, host);
+    strcpy(port_copy, port);
+
     connect_ctx->sock = sock;
-    connect_ctx->host = host;
-    connect_ctx->port = port;
+    connect_ctx->host = host_copy;
+    connect_ctx->port = port_copy;
 
     uv_thread_create(&sock->thread_handle, cobra__socket_connect_thread,
                      connect_ctx);
@@ -60,6 +66,9 @@ void cobra__socket_connect_thread(void *data) {
 
         uv_getaddrinfo(&sock->loop, sock->resolve_request,
                        cobra__socket_resolve_callback, host, port, NULL);
+
+        free(host);
+        free(port);
     } else {
         uv_mutex_unlock(&sock->mutex_handle);
     }

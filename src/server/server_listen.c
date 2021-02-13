@@ -23,9 +23,15 @@ cobra_server_err_t cobra_server_listen(cobra_server_t *server,
     cobra__server_listen_ctx_t *listen_ctx =
         malloc(sizeof(cobra__server_listen_ctx_t));
 
+    char *host_copy = malloc(strlen(host) + 1);
+    char *port_copy = malloc(strlen(port) + 1);
+
+    strcpy(host_copy, host);
+    strcpy(port_copy, port);
+
     listen_ctx->server = server;
-    listen_ctx->host = host;
-    listen_ctx->port = port;
+    listen_ctx->host = host_copy;
+    listen_ctx->port = port_copy;
 
     uv_thread_create(&server->thread_handle, cobra_server_listen_thread,
                      listen_ctx);
@@ -54,6 +60,9 @@ void cobra_server_listen_thread(void *data) {
 
         uv_getaddrinfo(&server->loop, server->resolve_request,
                        cobra__server_resolve_callback, host, port, NULL);
+
+        free(host);
+        free(port);
     } else {
         uv_mutex_unlock(&server->mutex_handle);
     }
