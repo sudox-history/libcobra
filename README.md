@@ -15,6 +15,11 @@ Fast and simple data live-transfer protocol between 2 participants in a connecti
 
 <br>
 
+## Note
+This version is about to be deprecated
+
+See: https://github.com/sudox-team/cobra-rs
+
 ## Features
 
 * Collecting data in packets instead of a byte stream
